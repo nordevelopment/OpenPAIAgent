@@ -234,12 +234,12 @@ export class AITools {
         type: 'function',
         function: {
           name: 'fetch_web_page',
-          description: 'Gets the HTML cleaned web page content. Supports JSON responses from APIs and dynamic JavaScript sites.',
+          description: 'Gets web page content. Uses headless browser (Puppeteer) by default to execute JS and render dynamic sites (SPAs, Wildberries, Amazon, React).',
           parameters: {
             type: 'object',
             properties: {
               url: { type: 'string', description: 'URL of the page to retrieve' },
-              dynamic: { type: 'boolean', description: 'Set to true to use a real browser (Puppeteer) to render dynamic pages (e.g. SPAs, React, etc.) or bypass basic scraper blocks.' }
+              dynamic: { type: 'boolean', description: 'Defaults to true (uses Puppeteer browser). Set to false only for raw API calls or static text.', default: true }
             },
             required: ['url']
           }

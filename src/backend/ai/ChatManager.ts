@@ -98,7 +98,7 @@ export class ChatManager {
     }
 
     // Run loop of interaction with AI (maximum iterations from config, to not go into infinite loop)
-    const maxSteps = config.AI_MAX_THINKING_STEPS || 15;
+    const maxSteps = config.AI_MAX_THINKING_STEPS || 25;
     for (let i = 0; i < maxSteps; i++) {
       const fullHistory = await this.historyManager.getHistory(sessionId);
 

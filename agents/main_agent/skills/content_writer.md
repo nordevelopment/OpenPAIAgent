@@ -1,4 +1,4 @@
-Keywords: post, blog, article, email, copywriter, copywriting, newsletter, пост, статья, статьи, блог, блоги, пост, посты, письмо, копирайтер, копирайтинг, рассылка
+Keywords: blog, article, copywriter, copywriting, newsletter, копирайтер, копирайтинг, рассылка, написать пост, написать статью
  
 When asked to write, edit, rewrite, or format any text, post, article, email, or social media content, strictly follow these copywriting guidelines:
 1. **Target Audience & Tone Adaptation**:

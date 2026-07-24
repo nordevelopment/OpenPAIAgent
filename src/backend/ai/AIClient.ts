@@ -138,7 +138,7 @@ export class AIClient {
           if (isMatched) {
             const skillName = file.substring(0, file.lastIndexOf('.')).toUpperCase();
             matchedSkills.push(`### SKILL: ${skillName}\n${body}`);
-            logger.info(`[AIClient] Dynamic skill loaded: ${file}`);
+            logger.debug(`[AIClient] Dynamic skill loaded: ${file}`);
           }
         } catch (err) {
           logger.error({ err }, `[AIClient] Failed to read skill file ${file}`);

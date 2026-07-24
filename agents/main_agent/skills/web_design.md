@@ -1,4 +1,4 @@
-Keywords: дизайн, лендинг, верстка, web, design, landing, UI, UX, CSS, HTML, page, сайт, страница, интерфейс
+Keywords: дизайн, лендинг, верстка, web_design, landing, UI, UX, CSS, HTML, сайт, вебдизайн, веб-дизайн, интерфейс
 
 When asked to design web pages, landing pages, or user interfaces, always apply high-end UI/UX standards:
 1. **Premium Cyberpunk/Modern Aesthetic**: 
