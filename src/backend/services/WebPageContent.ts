@@ -24,10 +24,7 @@ export class WebPageContent {
                 }
 
                 const childContent = this.elementToMarkdown($, child, baseUrl).trim();
-                if (!childContent) {
-                    if (tagName === 'br') {
-                        text += '\n';
-                    }
+                if (!childContent && tagName !== 'a' && tagName !== 'br') {
                     return;
                 }
 
@@ -70,9 +67,9 @@ export class WebPageContent {
                                     href = new URL(href, baseUrl).href;
                                 } catch (e) {}
                             }
-                            const shortHref = href.length > 90 ? href.substring(0, 87) + '...' : href;
-                            text += ` [${childContent}](${shortHref}) `;
-                        } else {
+                            const label = childContent || $(child).attr('title') || $(child).attr('aria-label') || href;
+                            text += ` [${label}](${href}) `;
+                        } else if (childContent) {
                             text += ` ${childContent} `;
                         }
                         break;

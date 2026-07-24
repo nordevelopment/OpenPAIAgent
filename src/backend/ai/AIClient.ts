@@ -129,7 +129,7 @@ export class AIClient {
 
           const isMatched = keywords.some(keyword => {
             if (!keyword) return false;
-            const escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const escaped = keyword.replace(/[\/\\^$*+?.()|[\]{}]/g, '\\$&');
             // Match whole word using Unicode property escapes (not preceded or followed by any letter)
             const regex = new RegExp(`(?<!\\p{L})${escaped}(?!\\p{L})`, 'gu');
             return regex.test(queryLower);
@@ -190,7 +190,7 @@ export class AIClient {
 
           const isMatched = keywords.some(keyword => {
             if (!keyword) return false;
-            const escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const escaped = keyword.replace(/[\/\\^$*+?.()|[\]{}]/g, '\\$&');
             const regex = new RegExp(`(?<!\\p{L})${escaped}(?!\\p{L})`, 'gu');
             return regex.test(queryLower);
           });
@@ -218,7 +218,7 @@ export class AIClient {
    * @param additionalSystem - additional system prompt (e.g., memory context)
    * @returns ответ от AI
    */
-   async sendMessage(
+  async sendMessage(
     messages: AIMessages[],
     agentId?: string,
     tools?: any[],
