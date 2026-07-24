@@ -8,4 +8,3 @@ When asked to search, research, scan, analyze, or retrieve information from a we
 5. **Technical/API Parsing**: When analyzing technical documentation:
    - Clearly list API endpoints, request methods (GET, POST, etc.), required headers, and body parameters.
    - Provide clean, functional code snippets or JSON examples in formatted code blocks.
-6. **E-commerce Search Tips**: When searching on specific stores, verify the search URL structure. For example, for Wildberries (wildberries.am or wildberries.ru), the search endpoint MUST be `/catalog/0/search.aspx?search=QUERY` (never omit the `.aspx` extension, as `/search?search=` returns a 404).

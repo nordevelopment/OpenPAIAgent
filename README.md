@@ -1,4 +1,4 @@
-# 🤖 Open PAIAgent
+# 🤖 Open PAIAgent - Open Personal AI Agent
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/nordevelopment?color=EA4AAA&style=flat-square)](https://github.com/sponsors/nordevelopment)
 [![GitHub Stars](https://img.shields.io/github/stars/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/stargazers)
@@ -8,9 +8,29 @@
 
 <a href="https://nordevelopment.github.io/OpenPAIAgent">Open PAIAgent project page</a>
 
-A lightweight, fast, and personal AI agent (**Open PAIAgent**) running locally on your computer or server. Inspired by OpenClaw and designed as its ultra-lightweight, zero-bloat alternative. No bloated frameworks (like LangChain) eating up your RAM. Just clean TypeScript, high-speed execution, and total control over your private data.
+Open PAIAgent is a high-speed, zero-bloat open-source personal AI agent built for absolute privacy and local execution. Designed as an ultra-lightweight alternative to resource-heavy frameworks, it drops complex abstractions like LangChain in favor of pure TypeScript performance, sub-second cold starts, and complete data sovereignty.
 
 ---
+
+## ⚡Features
+*   **💬 Dual Interfaces**: A beautiful cyberpunk-themed Web UI + Remote chat access via a Telegram bot.
+*   **🧠 Modular System Prompt**: The agent's personality and instructions are compiled dynamically from simple Markdown files (`Agent.md`, `Identity.md`, `User.md`, `Memory.md`).
+*   **⚡ Dynamic Agent Skills**: Save LLM context tokens by loading specialized prompt instructions conditionally. Skills live as modular Markdown files in `agents/<agentId>/skills/*.md`. When a query matches header keywords (e.g., `Keywords: amazon, wildberries, temu, code`), instructions are dynamically injected into the system prompt. Comes with pre-built skills for:
+    *   **🛒 E-commerce & Local Search**: Specialized URL structures, price sorting, and parsing rules for **Amazon**, **Wildberries**, **Ozon**, **Temu**, and **List.am**.
+    *   **💻 Software Engineering**: Refactoring, debugging, and strict code style instructions.
+    *   **🎨 Content Writing & Design**: Copywriting, UI/UX guidelines, and image generation prompt optimization.
+*   **👁️ AI Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
+*   **🔧 Powerful Tool Execution (Function Calling)**:
+    *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
+    *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis. Supports both fast static scraping and dynamic rendering with automatic fallback for SPAs (like React, Vue, e-commerce sites).
+    *   **PDF Generator**: The AI can write custom HTML/CSS templates and render them into professional A4 PDF documents saved directly to the workspace.
+    *   **Office Document Generator**: The AI can generate structured Excel spreadsheets (`.xlsx`) with custom columns, row styling, and formulas, as well as Word documents (`.docx`) with headings, styled paragraphs, text alignment, and tables.
+    *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
+*   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
+*   **📋 Task Management & Scheduler**: Schedule automated background tasks or trigger them manually. Features an automatic background task runner (scans every 60s), real-time status tracking in the UI, and instant Telegram execution alerts.
+
+---
+
 
 ## 🧠 Key Architectural Decisions
 
@@ -37,23 +57,6 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 
 ---
 
-## ⚡Features
-*   **💬 Dual Interfaces**: A beautiful cyberpunk-themed Web UI + Remote chat access via a Telegram bot.
-*   **🧠 Modular System Prompt**: The agent's personality and instructions are compiled dynamically from simple Markdown files (`Agent.md`, `Identity.md`, `User.md`, `Memory.md`).
-*   **⚡ Dynamic Agent Skills**: Save context tokens by loading instructions conditionally. Define modular skills inside `agents/<agentId>/skills/*.md`. If the user's query matches the keywords defined in the file's header (e.g., `Keywords: code, coding`), the corresponding instructions are dynamically injected into the system prompt.
-*   **⚙️ Web Settings Panel (Setup Wizard)**: Forget manually editing `.env` files. On first launch, the app automatically redirects you to a system settings page to input your API keys. Configurations are saved securely in a local, gitignored `config.json`.
-*   **👁️ AI Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
-*   **🔧 Powerful Tool Execution (Function Calling)**:
-    *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
-    *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis. Supports both fast static scraping and dynamic rendering with automatic fallback for SPAs (like React, Vue, e-commerce sites).
-    *   **PDF Generator**: The AI can write custom HTML/CSS templates and render them into professional A4 PDF documents saved directly to the workspace.
-    *   **Office Document Generator**: The AI can generate structured Excel spreadsheets (`.xlsx`) with custom columns, row styling, and formulas, as well as Word documents (`.docx`) with headings, styled paragraphs, text alignment, and tables.
-    *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
-*   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
-*   **📋 Task Management**: Manual run Tasks, AI agent being get tasks do it, shows status to user in UI.
-
----
-
 ## 🛠️ Tech Stack
 
 *   **Backend**: Node.js, Fastify (faster and lighter than Express), TypeScript.
@@ -74,10 +77,11 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 ### 1. Clone & Install Dependencies
 ```bash
 git clone https://github.com/nordevelopment/OpenPAIAgent
-or you can download the zip file from https://github.com/nordevelopment/OpenPAIAgent
-
+cd OpenPAIAgent
 npm install
 ```
+*(Alternatively, you can download and extract the ZIP archive directly from GitHub).*
+
 ### 2. Run the Application
 ```bash
 # Start - Build & start the app, Run Server
@@ -125,9 +129,9 @@ https://www.youtube.com/watch?v=rcRkP_UiDRo
 
 ---
 
-## ⚖️ Comparison: PAIAgent vs. Heavyweight Alternatives
+## ⚖️ Comparison: Open PAIAgent vs. Heavyweight Alternatives
 
-While other self-hosted AI interfaces require heavy setups (Docker, multi-container databases, etc.), **PAIAgent** is optimized for raw local performance and resource conservation:
+While other self-hosted AI interfaces require heavy setups (Docker, multi-container databases, etc.), **Open PAIAgent** is optimized for raw local performance and resource conservation:
 
 * **RAM Footprint**: **~50-100 MB** (compared to 1.5 GB+ for Open WebUI or 1 GB+ for LibreChat).
 * **Startup Time**: **Sub-second (< 1s)** (compared to 30-60s boot times for Docker-based alternatives).
