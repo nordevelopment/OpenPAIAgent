@@ -8,6 +8,7 @@
     <!-- Use absolute paths starting with slash since static path prefix is '/' -->
     <link href="/css/cybercore.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/chat.css">
+    <script src="/js/theme.js"></script>
     <style>
         .tasks-container {
             max-width: 90%;
@@ -209,7 +210,11 @@
                 <div class="cyber-text-glow" style="font-size: 14px; text-transform: uppercase;">
                     Manage background instructions for the AI
                 </div>
-                <div style="display: flex; gap: 15px;">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <select class="cyber-select cyber-theme-select" style="padding: 6px 12px; font-size: 12px;">
+                        <option value="dark">🌙 Cyber Dark</option>
+                        <option value="light">☀️ Modern Light</option>
+                    </select>
                     <button id="btnRunTasks" class="cyber-btn cyber-btn--green">
                         RUN READY TASKS ⚡
                     </button>

@@ -38,6 +38,7 @@
 
     <!-- Link to the Cybercore CSS Framework -->
     <link rel="stylesheet" href="frontend/css/cybercore.css">
+    <script src="frontend/js/theme.js"></script>
 
     <style>
         /* Layout */
@@ -300,9 +301,15 @@
             <li><a href="https://github.com/nordevelopment/OpenPersonalAIAgent" class="cyber-nav__link"
                     target="_blank">GitHub</a></li>
         </ul>
-        <div class="cyber-status">
-            <span class="cyber-status__dot"></span>
-            <span>SYSTEM: ONLINE</span>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <select class="cyber-select cyber-theme-select" style="padding: 4px 8px; font-size: 11px;">
+                <option value="dark">🌙 Dark</option>
+                <option value="light">☀️ Light</option>
+            </select>
+            <div class="cyber-status">
+                <span class="cyber-status__dot"></span>
+                <span>SYSTEM: ONLINE</span>
+            </div>
         </div>
     </nav>
 

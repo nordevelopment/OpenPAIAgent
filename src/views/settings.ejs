@@ -8,6 +8,7 @@
     <!-- Use absolute paths starting with slash since static path prefix is '/' -->
     <link href="/css/cybercore.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/chat.css">
+    <script src="/js/theme.js"></script>
 </head>
 
 <body class="cyber-theme" style="overflow: auto;">
@@ -41,10 +42,20 @@
             </div>
 
             <div class="settings-form-container cyber-tile"
-                style="background: rgba(6, 8, 16, 0.95); border: 2px solid var(--cyber-primary); padding: 10px 20px; width: 550px; max-width: 100%; box-shadow: 0 0 25px rgba(0, 255, 136, 0.15); display: flex; flex-direction: column; gap: 20px; border-radius: 4px; box-sizing: border-box;">
+                style="background: var(--color-bg-secondary); border: 2px solid var(--cyber-primary); padding: 10px 20px; width: 550px; max-width: 100%; box-shadow: 0 0 25px rgba(0, 255, 136, 0.15); display: flex; flex-direction: column; gap: 20px; border-radius: 4px; box-sizing: border-box;">
                 <div class="sessions-title cyber-text-glow"
                     style="font-size: 18px; border-bottom: 1px solid rgba(0, 255, 136, 0.3); padding-bottom: 8px; margin-bottom: 10px;">
                     AGENT CONFIGURATION
+                </div>
+
+                <div class="form-group">
+                    <label
+                        style="display: block; font-family: var(--font-mono); color: var(--cyber-secondary); margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase;">UI Theme</label>
+                    <select class="cyber-select cyber-theme-select" style="width: 100%; font-family: var(--font-mono); padding: 8px;">
+                        <option value="dark">🌙 Cyber Dark (Default)</option>
+                        <option value="light">☀️ Modern Light</option>
+                    </select>
+                    <small style="display: block; font-family: var(--font-mono); font-size: 12px; color: var(--color-text-muted); margin-top: 5px;">Select your preferred color theme for the interface.</small>
                 </div>
 
                 <div class="form-group">

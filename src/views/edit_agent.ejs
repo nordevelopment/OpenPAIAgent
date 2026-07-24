@@ -8,6 +8,7 @@
     <!-- Use relative or absolute paths starting with slash since static path prefix is '/' -->
     <link href="/css/cybercore.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/chat.css">
+    <script src="/js/theme.js"></script>
 </head>
 
 <body class="cyber-theme">
@@ -34,6 +35,14 @@
                 <div class="agent-name-display" id="currentAgentId" data-agent-id="<%= agentId %>">
                     <%= agentId.toUpperCase().replace('_', ' ' ) %>
                 </div>
+            </div>
+
+            <div class="agent-info-panel" style="margin-top: 20px;">
+                <div class="sessions-title cyber-text-glow">THEME</div>
+                <select class="cyber-select cyber-theme-select">
+                    <option value="dark">🌙 Cyber Dark</option>
+                    <option value="light">☀️ Modern Light</option>
+                </select>
             </div>
 
             <div class="sidebar-footer">
