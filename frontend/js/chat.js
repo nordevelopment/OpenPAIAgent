@@ -399,7 +399,7 @@ class AIAgentChat {
         } else if (eventName === 'skills_loaded') {
             const skills = eventData.skills || [];
             if (skills.length > 0) {
-                console.log('[AIAgent] Active skills loaded:', skills);
+                this.addSystemMessage(`Active skills loaded: ${skills.join(', ')}`, null, null, false, '💡');
             }
         } else if (eventName === 'final') {
             this.hideTyping();
