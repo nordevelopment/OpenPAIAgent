@@ -10,6 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as sqliteVec from 'sqlite-vec';
 import logger from '../utils/logger.js';
+import { config } from '../config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -177,6 +178,29 @@ export class DatabaseClient {
 
     const schema = fs.readFileSync(schemaPath, 'utf-8');
     this.db.exec(schema);
+
+    // Ensure vec_memories table matches configured AI_EMBEDDING_DIM
+    const expectedDim = config.AI_EMBEDDING_DIM || 4096;
+    try {
+      // Try to detect current vec_memories dimension by inserting a probe vector
+      // If the dimension mismatches, recreation is needed
+      const testBuffer = Buffer.alloc(expectedDim * 4); // Zero vector with target dimension
+      try {
+        const probeStmt = this.db.prepare('INSERT INTO vec_memories (rowid, embedding) VALUES (-999, ?)');
+        probeStmt.run(testBuffer);
+        // If probe succeeded, dimension matches — delete the probe row
+        this.db.prepare('DELETE FROM vec_memories WHERE rowid = -999').run();
+        logger.info({ expectedDim }, 'DatabaseClient: vec_memories dimension verified');
+      } catch (dimErr: any) {
+        // Dimension mismatch detected — recreate vec_memories with the correct dimension
+        logger.warn({ expectedDim, err: dimErr.message }, 'DatabaseClient: vec_memories dimension mismatch, recreating table');
+        this.db.exec('DROP TABLE IF EXISTS vec_memories');
+        this.db.exec(`CREATE VIRTUAL TABLE IF NOT EXISTS vec_memories USING vec0(embedding float[${expectedDim}])`);
+        logger.info({ expectedDim }, 'DatabaseClient: vec_memories recreated with correct dimension');
+      }
+    } catch (err: any) {
+      logger.error({ err }, 'DatabaseClient: Failed to verify vec_memories dimension');
+    }
 
     // Migration: Add is_auto column to tasks table if it doesn't exist
     try {

@@ -5,6 +5,7 @@
  */
 
 import puppeteer, { Browser } from 'puppeteer';
+import { validateAndResolveUrl } from '../utils/urlValidator.js';
 
 export class BrowserService {
   private browser: Browser | null = null;
@@ -21,7 +22,9 @@ export class BrowserService {
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
-          '--disable-gpu'
+          '--disable-gpu',
+          '--disable-local-storage',
+          '--disable-file-system'
         ]
       });
     }
@@ -70,6 +73,12 @@ export class BrowserService {
    * @returns Fully rendered HTML string
    */
   async fetchDynamicPage(url: string): Promise<string> {
+    // Security: validate URL before navigating
+    const validation = await validateAndResolveUrl(url);
+    if (!validation.valid) {
+      throw new Error(`URL blocked: ${validation.reason}`);
+    }
+
     const browser = await this.getBrowser();
     const page = await browser.newPage();
     try {

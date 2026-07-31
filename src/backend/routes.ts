@@ -41,6 +41,9 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
   const taskModel = new TaskModel(db);
 
+  // In-flight guard to prevent concurrent task execution overlaps
+  let isExecutingTasks = false;
+
   // Helper to execute tasks sequentially in background
   async function executeTasks(tasksToRun: any[]) {
     const taskSessionId = 'task_session';
@@ -62,7 +65,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
     for (const task of tasksToRun) {
       try {
         //app.log.info(`[Task Runner] Starting task #${task.id}: "${task.title}"`);
-        await taskModel.update(task.id, { status: 'running' });
+        // Tasks are already claimed (status='running' in DB) by claimReadyTasks, no need to update here
 
         if (telegramOwnerId && telegramBot) {
           await telegramBot.sendMessage(telegramOwnerId, `⏳ **[TASK #${task.id}] STARTED**\nInstruction: "${task.title}"`).catch(err => {
@@ -196,16 +199,23 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
   // Run ready tasks in background
   app.post('/api/tasks/run', async (_request, reply) => {
+    if (isExecutingTasks) {
+      return reply.send({ success: true, message: 'Task execution is already in progress' });
+    }
+
     const nowIso = new Date().toISOString();
-    const readyTasks = await taskModel.findReadyToRun(nowIso);
+    const readyTasks = await taskModel.claimReadyTasks(nowIso);
 
     if (readyTasks.length === 0) {
       return reply.send({ success: true, message: 'No tasks ready to run' });
     }
 
-    // Run them in background
+    // Run them in background with in-flight guard
+    isExecutingTasks = true;
     executeTasks(readyTasks).catch(err => {
       console.error('Error in background tasks runner:', err);
+    }).finally(() => {
+      isExecutingTasks = false;
     });
 
     return reply.send({ success: true, message: `Started executing ${readyTasks.length} tasks in the background.` });
@@ -579,13 +589,17 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
   // Start automatic task scheduler (scans for ready auto-tasks every 60 seconds)
   const taskInterval = setInterval(async () => {
+    if (isExecutingTasks) return; // Skip if already executing
     try {
       const nowIso = new Date().toISOString();
-      const readyAutoTasks = await taskModel.findReadyToRun(nowIso, true);
+      const readyAutoTasks = await taskModel.claimReadyTasks(nowIso, true);
       if (readyAutoTasks.length > 0) {
         //app.log.info(`[Scheduler] Found ${readyAutoTasks.length} auto-run tasks. Executing...`);
+        isExecutingTasks = true;
         executeTasks(readyAutoTasks).catch(err => {
           console.error('[Scheduler] Error running automatic tasks:', err);
+        }).finally(() => {
+          isExecutingTasks = false;
         });
       }
     } catch (err) {

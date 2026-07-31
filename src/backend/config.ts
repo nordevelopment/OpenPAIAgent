@@ -14,6 +14,7 @@ export const config = {
   AI_API_URL: process.env.AI_API_URL || '',
   AI_DEFAULT_MODEL: process.env.AI_DEFAULT_MODEL || 'qwen/qwen3.5-flash-02-23',
   AI_EMBEDDING_MODEL: process.env.AI_EMBEDDING_MODEL || 'Qwen/Qwen3-Embedding-8B',
+  AI_EMBEDDING_DIM: parseInt(process.env.AI_EMBEDDING_DIM || '4096'),
   AI_MAX_HISTORY_MESSAGES: process.env.AI_MAX_HISTORY_MESSAGES || 30,
   AI_TEMPERATURE: process.env.AI_TEMPERATURE || 0.2,
   AI_MAX_TOKENS: process.env.AI_MAX_TOKENS || 16000,

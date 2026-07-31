@@ -38,8 +38,11 @@ export class MemoryManager {
     }
 
     try {
-      const model = config.AI_EMBEDDING_MODEL || 'Qwen/Qwen3-Embedding-8B';
-      const embeddingUrl = config.AI_API_URL.replace('/chat/completions', '/embeddings') || 'https://openrouter.ai/api/v1/embeddings';
+      const model = config.AI_EMBEDDING_MODEL || 'qwen/qwen3-embedding-8b';
+      const baseUrl = config.AI_API_URL || 'https://openrouter.ai/api/v1/chat/completions';
+      const embeddingUrl = baseUrl.includes('/chat/completions')
+        ? baseUrl.replace('/chat/completions', '/embeddings')
+        : 'https://openrouter.ai/api/v1/embeddings';
 
       const response = await axios.post(
         embeddingUrl,
@@ -93,13 +96,21 @@ export class MemoryManager {
     });
 
     if (embedding.length > 0) {
-      try {
-        const serialized = this.serializeEmbedding(embedding);
-        const vecSql = 'INSERT INTO vec_memories (rowid, embedding) VALUES (CAST(? AS INTEGER), ?)';
-        await this.db.run(vecSql, [memoryId, serialized]);
-        logger.info({ memoryId, bytes: serialized.length }, '[MemoryManager] Vector saved successfully');
-      } catch (err: any) {
-        logger.error({ memoryId, err }, '[MemoryManager] Vector save failed');
+      const expectedDim = config.AI_EMBEDDING_DIM || 4096;
+      if (embedding.length !== expectedDim) {
+        logger.error(
+          { memoryId, actual: embedding.length, expected: expectedDim },
+          '[MemoryManager] Embedding dimension mismatch! Set AI_EMBEDDING_DIM to match your model.'
+        );
+      } else {
+        try {
+          const serialized = this.serializeEmbedding(embedding);
+          const vecSql = 'INSERT INTO vec_memories (rowid, embedding) VALUES (CAST(? AS INTEGER), ?)';
+          await this.db.run(vecSql, [memoryId, serialized]);
+          logger.info({ memoryId, bytes: serialized.length }, '[MemoryManager] Vector saved successfully');
+        } catch (err: any) {
+          logger.error({ memoryId, err }, '[MemoryManager] Vector save failed');
+        }
       }
     }
 
@@ -208,7 +219,7 @@ export class MemoryManager {
     const threshold = 0.5;
 
     const results = await this.searchMemories(sessionId, query, limit);
-    const filtered = results.filter(r => r.similarity > threshold);
+    const filtered = results.filter(r => r.similarity >= threshold);
     logger.debug({ filtered }, '[MemoryManager] Relevant memories - filtered');
     if (filtered.length === 0) return '';
 

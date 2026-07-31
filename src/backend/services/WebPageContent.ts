@@ -2,6 +2,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { browserService } from "./BrowserService.js";
 import logger from "../utils/logger.js";
+import { validateAndResolveUrl } from "../utils/urlValidator.js";
 
 const TIMEOUT = 30000;
 const MAX_HTML_LENGTH = 60000;
@@ -120,6 +121,13 @@ export class WebPageContent {
     }): Promise<string> {
         if (!url) return 'Error: URL is required';
 
+        // SSRF protection: validate URL scheme and resolved IP address
+        const validation = await validateAndResolveUrl(url);
+        if (!validation.valid) {
+            logger.warn({ url, reason: validation.reason }, 'WebPageContent: URL validation rejected');
+            return `Error: URL blocked — ${validation.reason}`;
+        }
+
         const isDynamic = dynamic !== false;
 
         try {
@@ -140,10 +148,11 @@ export class WebPageContent {
                             'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
                             ...headers
                         },
-                        timeout: TIMEOUT
+                        timeout: TIMEOUT,
+                        maxRedirects: 0
                     });
                     if (typeof response.data === 'object') {
-                        return JSON.stringify(response.data, null, 2);
+                        return JSON.stringify(response.data, null, 2).substring(0, MAX_TEXT_LENGTH);
                     }
                     html = String(response.data);
                 }
@@ -160,11 +169,12 @@ export class WebPageContent {
                         'Pragma': 'no-cache',
                         ...headers
                     },
-                    timeout: TIMEOUT
+                    timeout: TIMEOUT,
+                    maxRedirects: 0
                 });
 
                 if (typeof response.data === 'object') {
-                    return JSON.stringify(response.data, null, 2);
+                    return JSON.stringify(response.data, null, 2).substring(0, MAX_TEXT_LENGTH);
                 }
 
                 html = String(response.data);
@@ -192,9 +202,9 @@ export class WebPageContent {
 
         } catch (error: unknown) {
             const errorMsg = axios.isAxiosError(error) && error.response
-                ? `Status: ${error.response.status} - ${JSON.stringify(error.response.data)}`
-                : error instanceof Error ? error.message : String(error);
-            return `Error fetching "${url}": ${errorMsg}`;
+                ? `Status: ${error.response.status}`
+                : error instanceof Error ? error.message : 'Unknown error';
+            return `Error fetching URL: ${errorMsg}`;
         }
     }
 }
