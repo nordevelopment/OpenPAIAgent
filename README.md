@@ -1,9 +1,9 @@
 # 🤖 Open PAIAgent - Open Personal AI Agent
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/nordevelopment?color=EA4AAA&style=flat-square)](https://github.com/sponsors/nordevelopment)
-[![GitHub Stars](https://img.shields.io/github/stars/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/network/members)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/nordevelopment/OpenPersonalAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPersonalAIAgent/commits/main)
+[![GitHub Stars](https://img.shields.io/github/stars/nordevelopment/OpenPAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPAIAgent/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/nordevelopment/OpenPAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPAIAgent/network/members)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/nordevelopment/OpenPAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPAIAgent/commits/main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 <a href="https://nordevelopment.github.io/OpenPAIAgent">Open PAIAgent project page</a>
@@ -117,15 +117,13 @@ PAIAgent includes built-in security features to protect your server, files, and 
 https://www.youtube.com/watch?v=rcRkP_UiDRo
 
 ## 📸 Screenshots
-<img width="1303" height="895" alt="Image" src="https://github.com/user-attachments/assets/dd7af846-8534-4f9a-860b-59f654326fac" />
+<img width="1580" height="937" alt="Image" src="https://github.com/user-attachments/assets/14f2c727-b073-4458-9948-0dc4fc43e9af" />
 
-<img width="1297" height="898" alt="Image" src="https://github.com/user-attachments/assets/d9a2a92e-6338-4a39-bb11-a68821ff2e4b" />
+<img width="1584" height="939" alt="Image" src="https://github.com/user-attachments/assets/f965ff2a-9f6b-4bdf-8094-62dfd4c44c06" />
 
-<img width="1305" height="897" alt="Image" src="https://github.com/user-attachments/assets/f02a3c3b-0ea0-41de-b73d-99a36dabd475" />
+<img width="1496" height="935" alt="Image" src="https://github.com/user-attachments/assets/2dc6baa3-3c20-4a6b-bd00-dc3e7d5d3340" />
 
-<img width="1549" height="903" alt="Image" src="https://github.com/user-attachments/assets/5a6d1b22-39a2-4e05-a167-1c5eef931b65" />
-
-<img width="1248" height="614" alt="Image" src="https://github.com/user-attachments/assets/d321fd1c-2841-4e4d-8569-9a62e938a1ea" />
+<img width="1368" height="924" alt="Image" src="https://github.com/user-attachments/assets/536cc7f6-0c56-4fd0-9f0a-d24458eaf805" />
 
 ---
 
