@@ -125,6 +125,10 @@ https://www.youtube.com/watch?v=rcRkP_UiDRo
 
 <img width="1368" height="924" alt="Image" src="https://github.com/user-attachments/assets/536cc7f6-0c56-4fd0-9f0a-d24458eaf805" />
 
+<img width="1011" height="949" alt="Image" src="https://github.com/user-attachments/assets/3909c891-e971-4e6d-a2d3-8ba61b2dc02a" />
+
+
+
 ---
 
 ## ⚖️ Comparison: Open PAIAgent vs. Heavyweight Alternatives
