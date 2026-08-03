@@ -4,20 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenPAIAgent - Personal AI Agent - Lightweight & Secure open source ai agent</title>
+    <title>OpenPAIAgent - Personal AI Agent - Lightweight, Fast & Secure Local AI</title>
     <meta name="description"
-        content="Open Personal AI Agent (PAIAgent) - A lightweight, ultra-fast, and highly secure local personal AI assistant running on your hardware. Works with Web UI and Telegram, support visual models, vector DB, dynamic markdown prompts.">
+        content="Open Personal AI Agent (PAIAgent) - Ultra-fast, zero-bloat local personal AI assistant. Features Visual Web Setup Wizard, Web Scraper, PDF & Office Doc Generators, AI Image Gen, Task Scheduler, Vector Memory & Telegram integration.">
     <meta name="keywords"
-        content="AI Agent, Personal AI, local LLM, Telegram Bot, SQLite vector, Web UI, TypeScript, AI assistant, lightweight AI">
+        content="AI Agent, Personal AI, Web Scraper, PDF Generator, Document Generator, Image Generation, Task Scheduler, Telegram Bot, SQLite vector, Web UI, TypeScript, lightweight AI">
     <meta name="author" content="Norayr Petrosyan">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://github.com/nordevelopment/OpenPersonalAIAgent">
-    <meta property="og:title" content="Open Personal AI Agent (PAIAgent) - Lightweight Personal AI Assistant">
+    <meta property="og:title" content="Open Personal AI Agent (PAIAgent) - Ultra-Fast Local Personal AI">
     <meta property="og:description"
-        content="A lightweight, lightning-fast, and highly secure Personal AI Agent running locally on your hardware. Avoid bloated frameworks, run locally.">
+        content="A lightweight, lightning-fast, and highly secure Personal AI Agent running locally on your hardware. Zero bloat, maximum performance.">
     <meta property="og:image"
         content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
 
@@ -29,6 +29,7 @@
         content="A lightweight, lightning-fast, and highly secure Personal AI Agent running locally on your hardware.">
     <meta property="twitter:image"
         content="https://raw.githubusercontent.com/nordevelopment/OpenPersonalAIAgent/main/frontend/assets/og-image.png">
+
     <!-- Google Fonts for Cyberpunk Aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,12 +37,12 @@
         href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <!-- Link to the Cybercore CSS Framework -->
+    <!-- Link to Cybercore CSS Framework -->
     <link rel="stylesheet" href="frontend/css/cybercore.css">
     <script src="frontend/js/theme.js"></script>
 
     <style>
-        /* Specific layout styling for landing page */
+        /* Landing Page Custom Styling & Micro-Animations */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -49,9 +50,11 @@
         }
 
         .section-hero {
-            padding: var(--space-1xl) 0 var(--space-1xl);
+            padding: var(--space-2xl) 0 var(--space-1xl);
             text-align: center;
             border-bottom: 1px solid var(--color-border-default);
+            position: relative;
+            background: radial-gradient(circle at 50% 20%, rgba(0, 243, 255, 0.05) 0%, transparent 60%);
         }
 
         .section-padding {
@@ -61,20 +64,49 @@
 
         .hero-title {
             font-family: var(--font-display);
-            font-size: var(--text-4xl);
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
             margin-bottom: var(--space-md);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             color: var(--cyber-cyan-500);
             text-shadow: var(--glow-text-cyan);
+            line-height: 1.15;
         }
 
         .hero-subtitle {
             font-family: var(--font-body);
             font-size: var(--text-lg);
-            max-width: 800px;
+            max-width: 860px;
             margin: 0 auto var(--space-xl);
             color: var(--color-text-secondary);
             line-height: 1.6;
+        }
+
+        .metrics-banner {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+            margin: var(--space-lg) auto var(--space-xl);
+            max-width: 950px;
+        }
+
+        .metric-pill {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid var(--cyber-cyan-500);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+            padding: 10px 18px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+        }
+
+        .metric-pill__val {
+            color: var(--cyber-cyan-500);
+            font-weight: 700;
+            text-shadow: var(--glow-text-cyan);
         }
 
         .hero-buttons {
@@ -111,17 +143,89 @@
             box-shadow: var(--glow-magenta);
         }
 
+        .section-description {
+            font-family: var(--font-body);
+            color: var(--color-text-secondary);
+            max-width: 750px;
+            margin: var(--space-sm) auto 0;
+            font-size: var(--text-md);
+        }
+
+        /* Visual Setup Highlight Box */
+        .setup-wizard-box {
+            background: linear-gradient(135deg, rgba(13, 27, 42, 0.9) 0%, rgba(5, 10, 20, 0.95) 100%);
+            border: 1px solid var(--cyber-green-500);
+            box-shadow: 0 0 25px rgba(5, 255, 161, 0.2);
+            padding: var(--space-xl);
+            border-radius: 6px;
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .setup-wizard-box::before {
+            content: "NO EDITING .ENV REQUIRED";
+            position: absolute;
+            top: 12px;
+            right: -30px;
+            background: var(--cyber-green-500);
+            color: #000;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 35px;
+            transform: rotate(25deg);
+            letter-spacing: 1px;
+        }
+
+        .setup-steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .setup-step-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: var(--space-md);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .setup-step-card:hover {
+            border-color: var(--cyber-cyan-500);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .step-num {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 26px;
+            text-align: center;
+            border-radius: 50%;
+            background: var(--cyber-cyan-500);
+            color: #000;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            margin-bottom: var(--space-xs);
+        }
+
+        /* Terminal Box */
         .terminal-box {
             position: relative;
             background: var(--cyber-void-900);
             border: 1px solid var(--cyber-magenta-500);
             box-shadow: inset 0 0 15px rgba(255, 42, 109, 0.15);
             padding: var(--space-md);
-            margin-top: var(--space-md);
+            margin-top: var(--space-xs);
             font-family: var(--font-mono);
             font-size: var(--text-sm);
             color: var(--cyber-green-400);
             overflow-x: auto;
+            border-radius: 4px;
         }
 
         .terminal-header {
@@ -159,10 +263,11 @@
 
         .copy-btn {
             position: absolute;
-            right: 15px;
-            top: 45px;
+            right: 12px;
+            top: 42px;
         }
 
+        /* Highlight Text & Badges */
         .highlight-text {
             color: var(--cyber-cyan-500);
             text-shadow: var(--glow-text-cyan);
@@ -179,9 +284,67 @@
             font-weight: 700;
         }
 
+        /* Showcase Interactive Tabs */
+        .showcase-container {
+            background: var(--cyber-void-800);
+            border: 1px solid var(--cyber-cyan-500);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: var(--space-lg);
+        }
+
+        .showcase-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.6);
+            border-bottom: 1px solid var(--color-border-default);
+            overflow-x: auto;
+        }
+
+        .showcase-tab {
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--color-text-secondary);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .showcase-tab:hover {
+            color: var(--cyber-cyan-500);
+        }
+
+        .showcase-tab.active {
+            color: var(--cyber-cyan-500);
+            border-bottom-color: var(--cyber-cyan-500);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .showcase-panel {
+            display: none;
+            padding: var(--space-lg);
+        }
+
+        .showcase-panel.active {
+            display: block;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: var(--text-2xl);
+            }
+            .showcase-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -191,14 +354,17 @@
 
     <!-- Cyberpunk Navbar -->
     <nav class="cyber-nav">
-        <a href="index.html" class="cyber-nav__brand">Open PAIAgent</a>
+        <a href="index.html" class="cyber-nav__brand">🤖 Open PAIAgent</a>
         <button class="cyber-nav__burger" id="navBurger" aria-label="Toggle navigation" aria-expanded="false">
             <span></span><span></span><span></span>
         </button>
         <ul class="cyber-nav__links" id="navLinks">
             <li><a href="index.html" class="cyber-nav__link cyber-nav__link--active">Home</a></li>
+            <li><a href="#features" class="cyber-nav__link">Features</a></li>
+            <li><a href="#capabilities" class="cyber-nav__link">Capabilities</a></li>
+            <li><a href="#setup" class="cyber-nav__link">Quick Start</a></li>
             <li><a href="docs.html" class="cyber-nav__link">Docs</a></li>
-            <li><a href="https://github.com/nordevelopment/OpenPAIAgent" class="cyber-nav__link"
+            <li><a href="https://github.com/nordevelopment/OpenPersonalAIAgent" class="cyber-nav__link"
                     target="_blank">GitHub</a>
             </li>
         </ul>
@@ -219,195 +385,106 @@
         <div class="container">
             <h1 class="hero-title" data-text="OPEN PERSONAL AI AGENT">🤖 OPEN PERSONAL AI AGENT</h1>
             <p class="hero-subtitle">
-                Open PAIAgent a lightweight, lightning-fast, and highly secure <span class="highlight-text">Personal AI
-                    Agent</span> that runs locally on your hardware. Inspired by OpenClaw and designed as its
-                ultra-lightweight, zero-bloat alternative. Support for both local models (Ollama, LM Studio) and cloud
-                APIs (OpenRouter, Gemini, OpenAI). Avoid bloated frameworks that devour your RAM. Just clean
-                TypeScript, modular markdown prompt design, and absolute data privacy.
+                An ultra-fast, zero-bloat, 100% private <span class="highlight-text">Personal AI Agent</span> running directly on your hardware. 
+                Built with pure TypeScript performance, sub-second cold starts, visual Web Setup Wizard, and an autonomous tool engine for web scraping, document generation, image synthesis, and scheduled tasks.
             </p>
+
+            <!-- Metrics Banner -->
+            <div class="metrics-banner">
+                <div class="metric-pill">
+                    <span>⚡ Boot Speed:</span>
+                    <span class="metric-pill__val">&lt; 1 Second</span>
+                </div>
+                <div class="metric-pill">
+                    <span>💾 RAM Footprint:</span>
+                    <span class="metric-pill__val">~50 - 100 MB</span>
+                </div>
+                <div class="metric-pill">
+                    <span>🐳 Docker:</span>
+                    <span class="metric-pill__val">Zero (Native Node.js)</span>
+                </div>
+                <div class="metric-pill">
+                    <span>🔒 Privacy:</span>
+                    <span class="metric-pill__val">100% Self-Hosted</span>
+                </div>
+                <div class="metric-pill">
+                    <span>💬 Dual Interface:</span>
+                    <span class="metric-pill__val">Web UI + Telegram</span>
+                </div>
+            </div>
+
             <div class="hero-buttons">
+                <a href="#setup" class="cyber-btn cyber-btn--magenta cyber-btn--lg">
+                    <span>[ QUICK START SETUP ]</span>
+                </a>
+                <a href="#capabilities" class="cyber-btn cyber-btn--cyan cyber-btn--lg">
+                    <span>[ AGENT CAPABILITIES ]</span>
+                </a>
                 <a href="https://github.com/nordevelopment/OpenPersonalAIAgent"
-                    class="cyber-btn cyber-btn--magenta cyber-btn--lg" target="_blank">
+                    class="cyber-btn cyber-btn--yellow cyber-btn--lg" target="_blank">
                     <span>[ VIEW ON GITHUB ]</span>
-                </a>
-                <a href="docs.html" class="cyber-btn cyber-btn--cyan cyber-btn--lg">
-                    <span>[ READ DOCUMENTATION ]</span>
-                </a>
-                <a href="#installation" class="cyber-btn cyber-btn--yellow cyber-btn--lg">
-                    <span>[ QUICK START ]</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- Features Section -->
-    <section id="features" class="section-padding">
+    <!-- Visual Setup & Quick Start Section -->
+    <section id="setup" class="section-padding">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">⚡ Core Capabilities</h2>
+                <h2 class="section-title">⚙️ Ultra-Simple Setup & Visual Wizard</h2>
+                <p class="section-description">
+                    No complex Docker setups or manual editing of <code>.env</code> files required. Launch in 1 minute and configure everything visually.
+                </p>
             </div>
 
-            <div class="cyber-grid--3"
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md);">
-                <!-- Dual Interfaces -->
-                <div class="cyber-card cyber-card--interactive">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">💬</div>
-                        <h3 class="cyber-card__title">Dual Interfaces</h3>
-                        <span class="cyber-card__badge">WEB + TG</span>
-                    </div>
-                    <p>Beautiful cyberpunk-themed local Web UI for focused work, plus a remote Telegram bot to command
-                        your agent securely on the go.</p>
-                </div>
+            <!-- Setup Wizard Highlight Box -->
+            <div class="setup-wizard-box">
+                <h3 class="highlight-text" style="font-size: var(--text-xl); margin-bottom: var(--space-xs);">
+                    ✨ Visual Web Settings Panel (`/settings`)
+                </h3>
+                <p style="color: var(--color-text-secondary); line-height: 1.6; max-width: 900px;">
+                    When you run OpenPAIAgent for the first time, it automatically detects missing configuration and opens the <strong>Web Setup Wizard</strong>. Easily enter your API keys (OpenRouter, Gemini, OpenAI, Together AI, Grok), set up local LLMs (Ollama, LM Studio), configure your Telegram Bot whitelist, and set HTTP basic authentication passwords visually!
+                </p>
 
-                <!-- AI Vision -->
-                <div class="cyber-card cyber-card--interactive cyber-card--magenta">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">👁️</div>
-                        <h3 class="cyber-card__title">AI Vision</h3>
-                        <span class="cyber-card__badge">MULTIMEDIA</span>
+                <div class="setup-steps-grid">
+                    <div class="setup-step-card">
+                        <span class="step-num">1</span>
+                        <h4 style="color: var(--cyber-cyan-500); margin-bottom: 6px;">Clone or Download</h4>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                            Clone the repository or download the ZIP archive directly from GitHub.
+                        </p>
                     </div>
-                    <p>Attach images directly to the chat. The agent automatically resizes and optimizes files locally
-                        before sending them to the LLM.</p>
-                </div>
 
-                <!-- Modular System Prompt -->
-                <div class="cyber-card cyber-card--interactive cyber-card--yellow">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">🧠</div>
-                        <h3 class="cyber-card__title">Modular Prompt</h3>
-                        <span class="cyber-card__badge">SYSTEM</span>
+                    <div class="setup-step-card">
+                        <span class="step-num">2</span>
+                        <h4 style="color: var(--cyber-green-500); margin-bottom: 6px;">Run Setup Command</h4>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                            Run <code>npm start</code> or double-click <code>run.bat</code> on Windows.
+                        </p>
                     </div>
-                    <p>Customize personality, identity, and behavior on the fly. Instructions are compiled dynamically
-                        from simple, git-ignored Markdown files.</p>
-                </div>
 
-                <!-- Web Settings Panel -->
-                <div class="cyber-card cyber-card--interactive cyber-card--green">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">⚙️</div>
-                        <h3 class="cyber-card__title">Settings Panel</h3>
-                        <span class="cyber-card__badge">WIZARD</span>
+                    <div class="setup-step-card">
+                        <span class="step-num">3</span>
+                        <h4 style="color: var(--cyber-yellow-500); margin-bottom: 6px;">Visual Web Configuration</h4>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                            Open <code>http://127.0.0.1:3000</code> in your browser. Configure API keys and settings visually!
+                        </p>
                     </div>
-                    <p>No manual editing of <code>.env</code>. Local setup wizard configures everything (including local
-                        LLM endpoints or cloud APIs) and writes to a git-ignored JSON config.</p>
-                </div>
-
-                <!-- Tool Execution -->
-                <div class="cyber-card cyber-card--interactive">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">🔧</div>
-                        <h3 class="cyber-card__title">Tool Execution</h3>
-                        <span class="cyber-card__badge">FUNCTIONS</span>
-                    </div>
-                    <p>File system manager (restricted to a dedicated workspace folder with safe size limit config),
-                        real-time web scraper, and visual PDF generator.</p>
-                </div>
-
-                <!-- Semantic Memory -->
-                <div class="cyber-card cyber-card--interactive cyber-card--magenta">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">💾</div>
-                        <h3 class="cyber-card__title">Semantic Memory</h3>
-                        <span class="cyber-card__badge">SQL + VEC</span>
-                    </div>
-                    <p>Powered by SQLite and the ultra-lightweight <code>sqlite-vec</code> extension. Shared global
-                        long-term memory across chats for continuous learning.</p>
-                </div>
-
-                <!-- Office Document Generator -->
-                <div class="cyber-card cyber-card--interactive cyber-card--green">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">📑</div>
-                        <h3 class="cyber-card__title">Office Generator</h3>
-                        <span class="cyber-card__badge">OFFICE</span>
-                    </div>
-                    <p>Compile formatted Word documents (<code>.docx</code>) with structured layouts, and Excel
-                        spreadsheets (<code>.xlsx</code>) with formula support, custom styling, and grid borders.</p>
-                </div>
-
-                <!-- Background Task Scheduler -->
-                <div class="cyber-card cyber-card--interactive cyber-card--yellow">
-                    <div class="cyber-card__header">
-                        <div class="cyber-card__icon">📅</div>
-                        <h3 class="cyber-card__title">Task Scheduler</h3>
-                        <span class="cyber-card__badge">AUTONOMOUS</span>
-                    </div>
-                    <p>Automated background engine executes scheduled tasks in the background and sends execution
-                        reports/notifications directly to your Telegram channel.</p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Tech Stack Section -->
-    <section id="tech-stack" class="section-padding">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">🛠️ Cybernetic Architecture</h2>
-            </div>
-
-            <div class="cyber-grid--3">
-                <div class="cyber-card">
-                    <h3 class="highlight-text">// BACKEND</h3>
-                    <p>Node.js, Fastify (high speed, ultra-low overhead), TypeScript.</p>
-                </div>
-                <div class="cyber-card cyber-card--magenta">
-                    <h3 class="highlight-text"
-                        style="color: var(--cyber-magenta-500); text-shadow: var(--glow-magenta);">// FRONTEND</h3>
-                    <p>EJS templates, vanilla CSS (Cyberpunk theme), reactive vanilla JS.</p>
-                </div>
-                <div class="cyber-card cyber-card--yellow">
-                    <h3 class="highlight-text" style="color: var(--cyber-yellow-500); text-shadow: var(--glow-yellow);">
-                        // DATABASE & MEMORY</h3>
-                    <p><code>better-sqlite3</code> for configuration and logs + <code>sqlite-vec</code> for local vector
-                        embeddings.</p>
-                </div>
-                <div class="cyber-card cyber-card--green">
-                    <h3 class="highlight-text" style="color: var(--cyber-green-500); text-shadow: var(--glow-green);">//
-                        IMAGE PROCESSING</h3>
-                    <p><code>sharp</code> for blazing-fast local image resizing and optimization.</p>
-                </div>
-                <div class="cyber-card">
-                    <h3 class="highlight-text">// HTTP & SCRAPING</h3>
-                    <p><code>axios</code> for connections and <code>cheerio</code> for clean HTML processing.</p>
-                </div>
-                <div class="cyber-card cyber-card--magenta">
-                    <h3 class="highlight-text"
-                        style="color: var(--cyber-magenta-500); text-shadow: var(--glow-magenta);">// TELEGRAM BOT</h3>
-                    <p><code>telegraf</code> integration for secure connection with the Telegram Bot API.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Installation Section -->
-    <section id="installation" class="section-padding">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">⚙️ Quick Start</h2>
-            </div>
-
-            <p class="hero-subtitle" style="text-align: center; margin-bottom: var(--space-lg);">
-                Get your local agent up and running in less than a minute. No complex databases, Docker, or external
-                dependencies required.
-            </p>
-
+            <!-- Code Command Boxes -->
             <div class="cyber-grid--2">
                 <div>
-                    <h3 class="highlight-text">1. Prerequisites</h3>
-                    <div class="cyber-alert" style="margin-bottom: var(--space-md); margin-top: var(--space-xs);">
-                        <div class="cyber-alert__title">System Requirements</div>
-                        <p>Ensure you have <strong>Node.js (v20.x or later)</strong> and <strong>npm (v9.x or
-                                later)</strong> installed on your system.</p>
-                    </div>
-
-                    <h3 class="highlight-text" style="margin-top: var(--space-md);">2. Clone & Setup</h3>
-                    <p>Run these commands to clone the repository and download dependencies:</p>
+                    <h3 class="highlight-text">// STANDARD NPM INSTALLATION</h3>
+                    <p style="color: var(--color-text-secondary); margin-bottom: var(--space-xs); font-size: var(--text-sm);">
+                        Requires Node.js (v20+) and npm (v9+). Fast and simple:
+                    </p>
 
                     <div class="terminal-box">
                         <div class="terminal-header">
-                            <span>BASH // DEPS INSTALLATION</span>
+                            <span>BASH // CLONE & START</span>
                             <div class="terminal-actions">
                                 <span class="terminal-dot"></span>
                                 <span class="terminal-dot"></span>
@@ -416,51 +493,329 @@
                         </div>
                         <pre><code>git clone https://github.com/nordevelopment/OpenPersonalAIAgent.git
 cd OpenPersonalAIAgent
-npm install</code></pre>
-                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
-                            onclick="copyCode(this)">Copy</button>
+npm install
+npm start</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn" onclick="copyCode(this)">Copy</button>
                     </div>
                 </div>
 
                 <div>
-                    <h3 class="highlight-text">3. Boot Up & Setup Wizard</h3>
-                    <p>Start the application. It will automatically build and start the local server. On the first
-                        launch, it will redirect you to the visual web settings panel to set your API keys:</p>
-                    <div class="terminal-box">
-                        <div class="terminal-header">
-                            <span>BASH // PRODUCTION START</span>
-                            <div class="terminal-actions">
-                                <span class="terminal-dot"></span>
-                                <span class="terminal-dot"></span>
-                                <span class="terminal-dot"></span>
-                            </div>
-                        </div>
-                        <pre><code>npm start</code></pre>
-                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
-                            onclick="copyCode(this)">Copy</button>
-                    </div>
-                    <p style="margin-top: var(--space-xs);">Open <strong
-                            class="highlight-text">http://127.0.0.1:3000</strong> in your browser. (For active
-                        development with hot-reload, run <code>npm run dev</code> instead).</p>
-
-                    <h3 class="highlight-text" style="margin-top: var(--space-md);">4. Manual .env Config (Optional)
-                    </h3>
-                    <p>If you prefer using traditional environment variables, copy the template and edit it manually:
+                    <h3 class="highlight-text">// WINDOWS 1-CLICK LAUNCH (`run.bat`)</h3>
+                    <p style="color: var(--color-text-secondary); margin-bottom: var(--space-xs); font-size: var(--text-sm);">
+                        Download the ZIP file, extract it, and simply run the batch launcher:
                     </p>
+
                     <div class="terminal-box">
                         <div class="terminal-header">
-                            <span>BASH // INITIAL CONFIG</span>
+                            <span>CMD // WINDOWS BATCH LAUNCHER</span>
                             <div class="terminal-actions">
                                 <span class="terminal-dot"></span>
                                 <span class="terminal-dot"></span>
                                 <span class="terminal-dot"></span>
                             </div>
                         </div>
-                        <pre><code>cp .env.example .env</code></pre>
-                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn"
-                            onclick="copyCode(this)">Copy</button>
+                        <pre><code># Double-click 'run.bat' in the project directory
+# Or execute from command prompt:
+.\run.bat</code></pre>
+                        <button class="cyber-btn cyber-btn--sm cyber-btn--cyan copy-btn" onclick="copyCode(this)">Copy</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deep-Dive Agent Capabilities Grid -->
+    <section id="capabilities" class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">🛠️ Agent Capabilities & Tools</h2>
+                <p class="section-description">
+                    OpenPAIAgent is equipped with built-in, production-grade tools for web scraping, file creation, document generation, image synthesis, and autonomous task scheduling.
+                </p>
+            </div>
+
+            <div class="cyber-grid--3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-md);">
+                
+                <!-- Web Scraper -->
+                <div class="cyber-card cyber-card--interactive">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">🕸️</div>
+                        <h3 class="cyber-card__title">Smart Web Scraper</h3>
+                        <span class="cyber-card__badge">STATIC + SPA</span>
+                    </div>
+                    <p>
+                        Dual-engine scraper: fast static HTML parsing via <code>cheerio</code> with automated fallback to <code>puppeteer</code> headless browser rendering for complex React/Vue SPAs and e-commerce platforms.
+                    </p>
+                </div>
+
+                <!-- PDF Generator -->
+                <div class="cyber-card cyber-card--interactive cyber-card--magenta">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">📄</div>
+                        <h3 class="cyber-card__title">Visual PDF Generator</h3>
+                        <span class="cyber-card__badge">HTML TO PDF</span>
+                    </div>
+                    <p>
+                        The AI designs custom, responsive HTML/CSS layouts and compiles pixel-perfect A4 PDF reports, invoices, and documents directly saved to your local <code>workspace/</code>.
+                    </p>
+                </div>
+
+                <!-- Office Document Generator -->
+                <div class="cyber-card cyber-card--interactive cyber-card--green">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">📊</div>
+                        <h3 class="cyber-card__title">Office Generator</h3>
+                        <span class="cyber-card__badge">EXCEL + WORD</span>
+                    </div>
+                    <p>
+                        Native creation of structured Excel spreadsheets (<code>.xlsx</code>) with formula support, custom styling & borders, and formatted Word documents (<code>.docx</code>) with styled typography and tables.
+                    </p>
+                </div>
+
+                <!-- AI Image Generation -->
+                <div class="cyber-card cyber-card--interactive cyber-card--yellow">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">🎨</div>
+                        <h3 class="cyber-card__title">AI Image Generation</h3>
+                        <span class="cyber-card__badge">TOGETHER + GROK</span>
+                    </div>
+                    <p>
+                        Direct text-to-image synthesis in chat using <strong>Together AI</strong> or <strong>X.AI (Grok)</strong> with automatic provider failover and instant visual response rendering.
+                    </p>
+                </div>
+
+                <!-- Task Management & Background Scheduler -->
+                <div class="cyber-card cyber-card--interactive">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">⏱️</div>
+                        <h3 class="cyber-card__title">Task Scheduler</h3>
+                        <span class="cyber-card__badge">AUTONOMOUS</span>
+                    </div>
+                    <p>
+                        Schedule autonomous background tasks with cron expressions or timers. Scans every 60s, executes tasks silently in the background, and sends live reports to your Telegram bot.
+                    </p>
+                </div>
+
+                <!-- Dynamic E-Commerce & Agent Skills -->
+                <div class="cyber-card cyber-card--interactive cyber-card--magenta">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">🛒</div>
+                        <h3 class="cyber-card__title">Dynamic Agent Skills</h3>
+                        <span class="cyber-card__badge">TOKEN SAVER</span>
+                    </div>
+                    <p>
+                        Modular Markdown skills (`agents/&lt;agentId&gt;/skills/*.md`). Pre-configured parsing rules for <strong>Amazon</strong>, <strong>Wildberries</strong>, <strong>Ozon</strong>, <strong>Temu</strong>, and <strong>List.am</strong> loaded dynamically by keyword match to save LLM tokens.
+                    </p>
+                </div>
+
+                <!-- Dual Interface -->
+                <div class="cyber-card cyber-card--interactive cyber-card--yellow">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">💬</div>
+                        <h3 class="cyber-card__title">Dual Interfaces</h3>
+                        <span class="cyber-card__badge">WEB UI + TELEGRAM</span>
+                    </div>
+                    <p>
+                        Cyberpunk-themed local Web UI for desktop productivity + remote Telegram bot with <code>ALLOWED_TELEGRAM_USER_IDS</code> whitelist for safe on-the-go management.
+                    </p>
+                </div>
+
+                <!-- Hybrid Vector RAG Memory -->
+                <div class="cyber-card cyber-card--interactive cyber-card--green">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">🧠</div>
+                        <h3 class="cyber-card__title">Hybrid Vector Memory</h3>
+                        <span class="cyber-card__badge">SQLITE + VEC</span>
+                    </div>
+                    <p>
+                        Zero external database overhead (no Docker/Postgres/Pinecone). Embedded SQLite combined with <code>sqlite-vec</code> extension for semantic vector similarity search & fast long-term memory.
+                    </p>
+                </div>
+
+                <!-- Local AI Vision -->
+                <div class="cyber-card cyber-card--interactive">
+                    <div class="cyber-card__header">
+                        <div class="cyber-card__icon">👁️</div>
+                        <h3 class="cyber-card__title">Local AI Vision</h3>
+                        <span class="cyber-card__badge">MULTIMEDIA</span>
+                    </div>
+                    <p>
+                        Attach images directly into the chat interface. High-performance local resizing and optimization via <code>sharp</code> before sending to multimodal LLMs.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Capability Showcase / Live Previews -->
+    <section id="showcase" class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">⚡ Interactive Capability Showcase</h2>
+                <p class="section-description">
+                    Explore how OpenPAIAgent seamlessly executes complex multi-step workflows.
+                </p>
+            </div>
+
+            <div class="showcase-container">
+                <div class="showcase-tabs">
+                    <button class="showcase-tab active" onclick="switchShowcase(0)">🕸️ Web Scraper</button>
+                    <button class="showcase-tab" onclick="switchShowcase(1)">📄 PDF Generator</button>
+                    <button class="showcase-tab" onclick="switchShowcase(2)">📊 Excel / Word Generator</button>
+                    <button class="showcase-tab" onclick="switchShowcase(3)">⏱️ Task Scheduler</button>
+                    <button class="showcase-tab" onclick="switchShowcase(4)">🎨 Image Generator</button>
+                </div>
+
+                <!-- Tab 0: Web Scraper -->
+                <div class="showcase-panel active">
+                    <div class="showcase-grid">
+                        <div>
+                            <h4 style="color: var(--cyber-cyan-500); margin-bottom: 8px;">User Prompt:</h4>
+                            <p style="font-family: var(--font-mono); font-size: var(--text-sm); background: rgba(0,0,0,0.5); padding: 12px; border-left: 3px solid var(--cyber-cyan-500);">
+                                "Scrape the current pricing and specs of top wireless headphones on Amazon and summarize key specs."
+                            </p>
+                            <h4 style="color: var(--cyber-green-500); margin-top: 15px; margin-bottom: 8px;">Tool Execution:</h4>
+                            <ul style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6; list-style: square; padding-left: 20px;">
+                                <li>Dynamically loads <code>skills/amazon.md</code> parsing rules.</li>
+                                <li>Calls <code>scrape_web_page({ url, renderJs: true })</code>.</li>
+                                <li>Attempts fast static extraction via <code>cheerio</code>.</li>
+                                <li>Falls back to <code>puppeteer</code> headless Chrome for SPA content.</li>
+                                <li>Strips bloat HTML & outputs clean markdown table to LLM context.</li>
+                            </ul>
+                        </div>
+                        <div class="terminal-box" style="margin-top: 0;">
+                            <div class="terminal-header">
+                                <span>AGENT OUTPUT // WEB SCRAPER LOG</span>
+                            </div>
+                            <pre><code>[INFO] Matching skill: amazon.md (Keywords: amazon, price)
+[TOOL] Executing scrape_web_page...
+[SCRAPE] Dynamic SPA detected. Booting Headless Chrome...
+[SUCCESS] Scraped 14,250 chars. Extracted 8 items.
+[RESULT]
+| Product Name        | Price  | Rating |
+|---------------------|--------|--------|
+| Sony WH-1000XM5     | $348.00| 4.6/5  |
+| Bose QuietComfort   | $279.00| 4.5/5  |
+| Apple AirPods Max   | $449.00| 4.7/5  |</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 1: PDF Generator -->
+                <div class="showcase-panel">
+                    <div class="showcase-grid">
+                        <div>
+                            <h4 style="color: var(--cyber-magenta-500); margin-bottom: 8px;">User Prompt:</h4>
+                            <p style="font-family: var(--font-mono); font-size: var(--text-sm); background: rgba(0,0,0,0.5); padding: 12px; border-left: 3px solid var(--cyber-magenta-500);">
+                                "Create a professional A4 sales report PDF with header styles, summary table, and footer."
+                            </p>
+                            <h4 style="color: var(--cyber-green-500); margin-top: 15px; margin-bottom: 8px;">Tool Execution:</h4>
+                            <ul style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6; list-style: square; padding-left: 20px;">
+                                <li>LLM writes custom styled HTML/CSS code snippet.</li>
+                                <li>Calls <code>generate_pdf({ html, filename: 'sales_report.pdf' })</code>.</li>
+                                <li>Renders pixel-perfect A4 PDF document using Puppeteer.</li>
+                                <li>Saves result into local <code>workspace/sales_report.pdf</code>.</li>
+                            </ul>
+                        </div>
+                        <div class="terminal-box" style="margin-top: 0; border-color: var(--cyber-magenta-500);">
+                            <div class="terminal-header" style="color: var(--cyber-magenta-500);">
+                                <span>AGENT OUTPUT // PDF GENERATOR LOG</span>
+                            </div>
+                            <pre><code>[TOOL] Executing generate_pdf...
+[HTML] Compiling styled template (CSS Grid, Custom Fonts)...
+[RENDER] Launching headless browser page (A4 layout)...
+[SUCCESS] Saved file to workspace/sales_report.pdf (142 KB)
+[DOWNLOAD LINK] file:///e:/AILab/NodeProjects/OpenPAIAgent/workspace/sales_report.pdf</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Excel / Word Generator -->
+                <div class="showcase-panel">
+                    <div class="showcase-grid">
+                        <div>
+                            <h4 style="color: var(--cyber-green-500); margin-bottom: 8px;">User Prompt:</h4>
+                            <p style="font-family: var(--font-mono); font-size: var(--text-sm); background: rgba(0,0,0,0.5); padding: 12px; border-left: 3px solid var(--cyber-green-500);">
+                                "Generate an Excel spreadsheet for monthly expenses with columns for Category, Budget, Actual, Difference, and SUM formulas."
+                            </p>
+                            <h4 style="color: var(--cyber-cyan-500); margin-top: 15px; margin-bottom: 8px;">Tool Execution:</h4>
+                            <ul style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6; list-style: square; padding-left: 20px;">
+                                <li>Calls <code>generate_excel_document({ sheets, filename })</code> or <code>generate_word_document</code>.</li>
+                                <li>Applies custom header cell formatting, column widths, and Excel formulas.</li>
+                                <li>Saves directly to <code>workspace/Expenses_August.xlsx</code>.</li>
+                            </ul>
+                        </div>
+                        <div class="terminal-box" style="margin-top: 0; border-color: var(--cyber-green-500);">
+                            <div class="terminal-header" style="color: var(--cyber-green-500);">
+                                <span>AGENT OUTPUT // OFFICE GENERATOR LOG</span>
+                            </div>
+                            <pre><code>[TOOL] Executing generate_excel_document...
+[EXCEL] Building sheet "August Expenses" (4 columns, 12 rows)...
+[FORMULA] Applied '=SUM(C2:C11)' to total cell...
+[STYLE] Added header fill #0D1B2A and grid border styling.
+[SUCCESS] Generated workspace/Expenses_August.xlsx (18.4 KB)</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Task Scheduler -->
+                <div class="showcase-panel">
+                    <div class="showcase-grid">
+                        <div>
+                            <h4 style="color: var(--cyber-yellow-500); margin-bottom: 8px;">User Prompt:</h4>
+                            <p style="font-family: var(--font-mono); font-size: var(--text-sm); background: rgba(0,0,0,0.5); padding: 12px; border-left: 3px solid var(--cyber-yellow-500);">
+                                "Every morning at 09:00, scrape tech news, generate a summary, and send it to my Telegram channel."
+                            </p>
+                            <h4 style="color: var(--cyber-green-500); margin-top: 15px; margin-bottom: 8px;">Tool Execution:</h4>
+                            <ul style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6; list-style: square; padding-left: 20px;">
+                                <li>Creates background task record with cron expression `0 9 * * *`.</li>
+                                <li>Internal scheduler engine scans every 60s in the background.</li>
+                                <li>Triggers autonomous workflow silently without manual intervention.</li>
+                                <li>Sends execution status report directly to user's Telegram.</li>
+                            </ul>
+                        </div>
+                        <div class="terminal-box" style="margin-top: 0; border-color: var(--cyber-yellow-500);">
+                            <div class="terminal-header" style="color: var(--cyber-yellow-500);">
+                                <span>AGENT OUTPUT // BACKGROUND SCHEDULER LOG</span>
+                            </div>
+                            <pre><code>[SCHEDULER] Task #42 triggered (Cron: 0 9 * * *).
+[EXECUTE] Scraping HackerNews top stories...
+[SUMMARY] Generated 5-bullet morning tech brief.
+[TELEGRAM] Sending push alert to Chat ID 849204...
+[STATUS] Task #42 completed successfully at 09:00:02.</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Image Generator -->
+                <div class="showcase-panel">
+                    <div class="showcase-grid">
+                        <div>
+                            <h4 style="color: var(--cyber-cyan-500); margin-bottom: 8px;">User Prompt:</h4>
+                            <p style="font-family: var(--font-mono); font-size: var(--text-sm); background: rgba(0,0,0,0.5); padding: 12px; border-left: 3px solid var(--cyber-cyan-500);">
+                                "Generate a futuristic cyberpunk city skyline illuminated with cyan and neon magenta lights."
+                            </p>
+                            <h4 style="color: var(--cyber-green-500); margin-top: 15px; margin-bottom: 8px;">Tool Execution:</h4>
+                            <ul style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6; list-style: square; padding-left: 20px;">
+                                <li>Calls <code>generate_image({ prompt })</code>.</li>
+                                <li>Checks API provider priority (Together AI vs X.AI Grok).</li>
+                                <li>Synthesizes image and streams image binary back to UI & Telegram.</li>
+                            </ul>
+                        </div>
+                        <div class="terminal-box" style="margin-top: 0;">
+                            <div class="terminal-header">
+                                <span>AGENT OUTPUT // IMAGE GENERATOR LOG</span>
+                            </div>
+                            <pre><code>[TOOL] Executing generate_image...
+[PROVIDER] Using Together AI (Flux.1 Model)...
+[SYNTHESIS] Processing prompt...
+[SUCCESS] Generated 1024x1024 PNG image.
+[RENDER] Displaying image in chat view.</code></pre>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -469,13 +824,11 @@ npm install</code></pre>
     <section id="comparison" class="section-padding">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">⚖️ Features & Resource Comparison</h2>
+                <h2 class="section-title">⚖️ Features & Performance Comparison</h2>
+                <p class="section-description">
+                    Compare OpenPAIAgent with heavyweight alternatives. Raw performance metrics prove its efficiency on local hardware.
+                </p>
             </div>
-
-            <p class="hero-subtitle" style="text-align: center; margin-bottom: var(--space-lg);">
-                Compare PAIAgent with heavyweight alternatives. The metrics prove how lightweight and efficient it is
-                for local hardware.
-            </p>
 
             <div class="cyber-table-wrapper">
                 <table class="cyber-table cyber-table--striped cyber-table--bordered">
@@ -507,36 +860,52 @@ npm install</code></pre>
                             <td>5 - 10 seconds</td>
                         </tr>
                         <tr>
+                            <td><strong>Visual Setup Wizard</strong></td>
+                            <td><span class="advantage-badge">Yes (`/settings` UI)</span></td>
+                            <td>Partial</td>
+                            <td>No (Manual Config)</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
                             <td><strong>Installation</strong></td>
-                            <td><span class="advantage-badge">&lt; 1 minute (One-command)</span></td>
-                            <td>5+ minutes (Docker setup)</td>
-                            <td>10+ minutes (Complex Compose)</td>
-                            <td>5+ minutes (Docker / Installer)</td>
-                            <td>5+ minutes (pnpm / Docker)</td>
+                            <td><span class="advantage-badge">&lt; 1 min (1 Command / `run.bat`)</span></td>
+                            <td>5+ min (Docker)</td>
+                            <td>10+ min (Compose)</td>
+                            <td>5+ min (Installer)</td>
+                            <td>5+ min (pnpm)</td>
                         </tr>
                         <tr>
-                            <td><strong>Dependencies</strong></td>
-                            <td>Node.js & npm (Native)</td>
-                            <td>Docker & Ollama</td>
-                            <td>Docker, Mongo, Redis</td>
-                            <td>Docker or Desktop</td>
-                            <td>Node.js & pnpm (or Docker)</td>
+                            <td><strong>Web Scraper (Static + SPA)</strong></td>
+                            <td><span class="advantage-badge">Built-in (Cheerio + Puppeteer)</span></td>
+                            <td>Requires Plugin</td>
+                            <td>Requires Plugin</td>
+                            <td>Basic Static</td>
+                            <td>Built-in</td>
                         </tr>
                         <tr>
-                            <td><strong>Database</strong></td>
-                            <td>SQLite (embedded)</td>
+                            <td><strong>PDF / Office Doc Generator</strong></td>
+                            <td><span class="advantage-badge">Built-in (PDF, XLSX, DOCX)</span></td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Task Scheduler (Cron/Timer)</strong></td>
+                            <td><span class="advantage-badge">Built-in (60s Background Engine)</span></td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>Built-in</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database Overhead</strong></td>
+                            <td>SQLite + `sqlite-vec` (Embedded)</td>
                             <td>PostgreSQL / MySQL</td>
                             <td>MongoDB + Meilisearch</td>
                             <td>Vector DB + SQLite</td>
                             <td>SQLite (embedded)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Ideal For</strong></td>
-                            <td>Lightweight personal workspace</td>
-                            <td>Multi-user hosting</td>
-                            <td>Enterprise chat solutions</td>
-                            <td>Document-based RAG</td>
-                            <td>Multi-channel agent bots</td>
                         </tr>
                     </tbody>
                 </table>
@@ -547,10 +916,9 @@ npm install</code></pre>
     <!-- Support Section -->
     <section id="support" class="section-padding" style="text-align: center;">
         <div class="container">
-            <h2 class="section-title">💖 Sponsor the Cybercore</h2>
+            <h2 class="section-title">💖 Support OpenPAIAgent</h2>
             <p class="hero-subtitle" style="margin-top: var(--space-md);">
-                PAIAgent is open-source and free. If it saved your hardware resources and simplified your AI operations,
-                consider supporting our development node.
+                OpenPAIAgent is 100% open-source and free under the MIT License. If it saved your hardware resources and boosted your AI workflow, consider supporting our project!
             </p>
             <a href="https://github.com/sponsors/nordevelopment" class="cyber-btn cyber-btn--magenta cyber-btn--lg"
                 target="_blank" style="margin-top: var(--space-md);">
@@ -569,8 +937,9 @@ npm install</code></pre>
         </div>
     </footer>
 
-    <!-- Copy code JS utility -->
+    <!-- Scripts -->
     <script>
+        // Copy Code Utility
         function copyCode(btn) {
             const pre = btn.previousElementSibling;
             const code = pre.querySelector('code') ? pre.querySelector('code').innerText : pre.innerText;
@@ -586,8 +955,21 @@ npm install</code></pre>
                 }, 2000);
             });
         }
+
+        // Showcase Tab Switcher
+        function switchShowcase(index) {
+            const tabs = document.querySelectorAll('.showcase-tab');
+            const panels = document.querySelectorAll('.showcase-panel');
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            panels.forEach((panel, i) => {
+                panel.classList.toggle('active', i === index);
+            });
+        }
     </script>
-    <!-- Mobile nav toggle -->
+
+    <!-- Mobile Nav Toggle -->
     <script>
         (function () {
             const burger = document.getElementById('navBurger');
