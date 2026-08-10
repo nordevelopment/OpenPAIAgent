@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   result TEXT,
   run_at DATETIME,
   is_auto INTEGER DEFAULT 0,
+  repeat_interval INTEGER DEFAULT NULL,
+  cron_expression TEXT DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

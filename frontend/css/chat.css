@@ -119,7 +119,7 @@
         }
 
         .message.agent .message-box {
-            background: var(--cyber-void-500);
+            background: var(--cyber-void-100);
             border-left: 4px solid var(--cyber-primary);
             color: var(--color-text-primary);
             opacity: 0.9;

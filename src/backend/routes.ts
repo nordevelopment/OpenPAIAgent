@@ -12,6 +12,7 @@ import { config } from './config.js';
 import { updateEnvFile } from './utils/envHelper.js';
 import { DatabaseClient } from './database/DatabaseClient.js';
 import { TaskModel } from './models/task.js';
+import { getNextRunTime } from './utils/schedule.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -76,25 +77,48 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         // Send message to agent
         const response = await chatManager.sendMessage(task.title, taskSessionId);
 
-        // Set to done
-        await taskModel.update(task.id, {
-          status: 'done',
-          result: response.content
-        });
+        // Check if task is recurring (has interval or cron schedule)
+        const nextRunIso = getNextRunTime(task);
+
+        if (nextRunIso) {
+          // Recurring task: reschedule for next run and set back to 'ready'
+          await taskModel.update(task.id, {
+            status: 'ready',
+            run_at: nextRunIso,
+            result: response.content
+          });
+        } else {
+          // One-shot task: set to done
+          await taskModel.update(task.id, {
+            status: 'done',
+            result: response.content
+          });
+        }
 
         //app.log.info(`[Task Runner] Completed task #${task.id}`);
         if (telegramOwnerId && telegramBot) {
-          await telegramBot.sendMessage(telegramOwnerId, `✅ **[TASK #${task.id}] COMPLETED**\nInstruction: "${task.title}"\n\nResult:\n${response.content}`).catch(err => {
+          const statusHeader = nextRunIso ? `🔁 **[TASK #${task.id}] RECURRED** (Next: ${nextRunIso})` : `✅ **[TASK #${task.id}] COMPLETED**`;
+          await telegramBot.sendMessage(telegramOwnerId, `${statusHeader}\nInstruction: "${task.title}"\n\nResult:\n${response.content}`).catch(err => {
             console.error('[Telegram] Notification error:', err);
           });
         }
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
         console.error(`Failed to execute task ${task.id}:`, error);
-        await taskModel.update(task.id, {
-          status: 'failed',
-          result: errorMsg
-        });
+
+        const nextRunIso = getNextRunTime(task);
+        if (nextRunIso) {
+          await taskModel.update(task.id, {
+            status: 'ready',
+            run_at: nextRunIso,
+            result: `Error: ${errorMsg}`
+          });
+        } else {
+          await taskModel.update(task.id, {
+            status: 'failed',
+            result: errorMsg
+          });
+        }
 
         if (telegramOwnerId && telegramBot) {
           await telegramBot.sendMessage(telegramOwnerId, `❌ **[TASK #${task.id}] FAILED**\nInstruction: "${task.title}"\n\nError: ${errorMsg}`).catch(err => {
@@ -127,8 +151,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Create a new task
-  app.post('/api/tasks', async (request: FastifyRequest<{ Body: { title: string, status?: 'ready' | 'done' | 'running' | 'failed', run_at?: string, is_auto?: boolean } }>, reply: FastifyReply) => {
-    const { title, status, run_at, is_auto } = request.body;
+  app.post('/api/tasks', async (request: FastifyRequest<{ Body: { title: string, status?: 'ready' | 'done' | 'running' | 'failed', run_at?: string, is_auto?: boolean, repeat_interval?: number, cron_expression?: string } }>, reply: FastifyReply) => {
+    const { title, status, run_at, is_auto, repeat_interval, cron_expression } = request.body;
     if (!title || typeof title !== 'string') {
       return reply.status(400).send({ success: false, message: 'Invalid title' });
     }
@@ -138,7 +162,9 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         title,
         status,
         run_at: run_at || undefined,
-        is_auto: is_auto ? 1 : 0
+        is_auto: is_auto ? 1 : 0,
+        repeat_interval: repeat_interval !== undefined ? repeat_interval : undefined,
+        cron_expression: cron_expression || undefined
       });
       return reply.send({ success: true, taskId, message: 'Task created successfully' });
     } catch (error) {
@@ -148,13 +174,13 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Update a task
-  app.put('/api/tasks/:id', async (request: FastifyRequest<{ Params: { id: string }, Body: { title?: string, status?: 'ready' | 'done' | 'running' | 'failed', result?: string, run_at?: string, is_auto?: boolean } }>, reply: FastifyReply) => {
+  app.put('/api/tasks/:id', async (request: FastifyRequest<{ Params: { id: string }, Body: { title?: string, status?: 'ready' | 'done' | 'running' | 'failed', result?: string, run_at?: string, is_auto?: boolean, repeat_interval?: number | null, cron_expression?: string | null } }>, reply: FastifyReply) => {
     const id = parseInt(request.params.id, 10);
     if (isNaN(id)) {
       return reply.status(400).send({ success: false, message: 'Invalid task ID' });
     }
 
-    const { title, status, result, run_at, is_auto } = request.body;
+    const { title, status, result, run_at, is_auto, repeat_interval, cron_expression } = request.body;
 
     try {
       const existing = await taskModel.findById(id);
@@ -167,7 +193,9 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         status,
         result,
         run_at: run_at === '' ? undefined : run_at,
-        is_auto: is_auto !== undefined ? (is_auto ? 1 : 0) : undefined
+        is_auto: is_auto !== undefined ? (is_auto ? 1 : 0) : undefined,
+        repeat_interval,
+        cron_expression
       });
       return reply.send({ success: true, message: 'Task updated successfully' });
     } catch (error) {

@@ -25,6 +25,8 @@
     "AI Software"
   ],
   "scripts": {
+    "predev": "node scripts/check-deps.js",
+    "prestart": "node scripts/check-deps.js",
     "dev": "tsx watch --clear-screen src/backend/server.ts",
     "build": "tsc",
     "start": "npm run build && node dist/backend/server.js",
@@ -45,6 +47,7 @@
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.4.1",
     "cheerio": "^1.2.0",
+    "cron-parser": "^5.8.1",
     "docx": "^9.7.1",
     "dotenv": "^17.3.1",
     "ejs": "^6.0.1",
