@@ -24,7 +24,7 @@
         /* Sidebar Extensions */
         .sidebar {
             width: 280px;
-            background-color: var(--cyber-void-700);
+            background-color: var(--cyber-void-900);
             padding: 15px;
             display: flex;
             flex-direction: column;
@@ -937,18 +937,51 @@
             background: #fdfdfd;
         }
 
-        .warning-banner {
+        .cyber-warning-alert,
+        #setupWarningAlert {
             display: none;
-            background: var(--cyber-red-100);
-            border: 1px solid var(--cyber-red-500);
-            padding: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--cyber-red-800);
+            background: rgba(255, 170, 0, 0.14);
+            border-bottom: 1px solid rgba(255, 170, 0, 0.5);
+            padding: 14px 24px;
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffcc00;
             text-align: center;
-            animation: flicker 0.15s infinite;
-            margin-bottom: 4px;
-            width: 550px;
-            max-width: 100%;
-            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            letter-spacing: 0.5px;
+        }
+
+        .cyber-warning-alert a,
+        #setupWarningLink {
+            color: #00ff88 !important;
+            text-decoration: underline !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            margin: 0 4px;
+            transition: all 0.2s ease;
+        }
+
+        .cyber-warning-alert a:hover,
+        #setupWarningLink:hover {
+            color: #33ff99 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+
+        [data-theme="light"] .cyber-warning-alert,
+        [data-theme="light"] #setupWarningAlert {
+            background: #fffbe6;
+            border-bottom: 1px solid #ffe58f;
+            color: #d46b08;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        [data-theme="light"] .cyber-warning-alert a,
+        [data-theme="light"] #setupWarningLink {
+            color: #0284c7 !important;
+            text-decoration: underline !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
         }

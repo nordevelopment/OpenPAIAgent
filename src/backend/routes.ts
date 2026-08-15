@@ -15,6 +15,10 @@ import { TaskModel } from './models/task.js';
 import { getNextRunTime } from './utils/schedule.js';
 import fs from 'fs';
 import path from 'path';
+import { getAIProvidersList } from './config/ai_providers.js';
+import { openRouterService } from './services/OpenRouterService.js';
+
+
 
 
 /**
@@ -461,9 +465,10 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   // Get system settings
   app.get('/api/settings', async (_request, reply) => {
     return reply.send({
+      providers: getAIProvidersList(),
       hasAiApiKey: !!config.AI_API_KEY,
       aiApiUrl: config.AI_API_URL || 'https://openrouter.ai/api/v1/chat/completions',
-      aiDefaultModel: config.AI_DEFAULT_MODEL || 'qwen/qwen3.5-flash-02-23',
+      aiDefaultModel: config.AI_DEFAULT_MODEL || 'qwen/qwen3.7-flash',
       hasTelegramBotToken: !!config.TELEGRAM_BOT_TOKEN,
       allowedTelegramUserIds: config.ALLOWED_TELEGRAM_USER_IDS || '',
       appUser: config.APP_USER || 'admin',
@@ -476,6 +481,16 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       togetherApiKeyMasked: config.images.together.key ? '******' : '',
       xaiApiKeyMasked: config.images.xai.key ? '******' : ''
     });
+  });
+
+  // Get OpenRouter live models with pricing
+  app.get('/api/ai/openrouter-models', async (_request, reply) => {
+    try {
+      const models = await openRouterService.getModels();
+      return reply.send({ success: true, models });
+    } catch (err) {
+      return reply.status(500).send({ success: false, message: 'Failed to fetch OpenRouter models', models: [] });
+    }
   });
 
   // Save system settings

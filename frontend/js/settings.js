@@ -2,10 +2,12 @@ class SystemSettings {
     constructor() {
         this.btnBackToChat = document.getElementById('btnBackToChat');
         this.btnSaveSettings = document.getElementById('btnSaveSettings');
-        this.setupWarningBanner = document.getElementById('setupWarningBanner');
-        
+        this.setupWarningAlert = document.getElementById('setupWarningAlert');
+
         this.settingsAiApiKey = document.getElementById('settingsAiApiKey');
+        this.settingsAiProvider = document.getElementById('settingsAiProvider');
         this.settingsAiApiUrl = document.getElementById('settingsAiApiUrl');
+        this.settingsAiModelSelect = document.getElementById('settingsAiModelSelect');
         this.settingsAiDefaultModel = document.getElementById('settingsAiDefaultModel');
         this.settingsTelegramToken = document.getElementById('settingsTelegramToken');
         this.settingsAllowedTelegramUserIds = document.getElementById('settingsAllowedTelegramUserIds');
@@ -13,6 +15,9 @@ class SystemSettings {
         this.settingsAppPassword = document.getElementById('settingsAppPassword');
         this.settingsTogetherApiKey = document.getElementById('settingsTogetherApiKey');
         this.settingsXaiApiKey = document.getElementById('settingsXaiApiKey');
+
+        this.providers = [];
+        this.openRouterModels = [];
 
         this.init();
     }
@@ -26,6 +31,32 @@ class SystemSettings {
         if (this.btnSaveSettings) {
             this.btnSaveSettings.addEventListener('click', () => this.saveSettings());
         }
+        if (this.settingsAiProvider) {
+            this.settingsAiProvider.addEventListener('change', (e) => this.onProviderChange(e.target.value));
+        }
+        if (this.settingsAiApiUrl) {
+            this.settingsAiApiUrl.addEventListener('input', () => this.syncProviderSelectFromUrl());
+        }
+        if (this.settingsAiModelSelect) {
+            this.settingsAiModelSelect.addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (val) {
+                    this.settingsAiDefaultModel.value = val;
+                    this.updatePriceBadgeForModel(val);
+                }
+            });
+        }
+        if (this.settingsAiDefaultModel) {
+            this.settingsAiDefaultModel.addEventListener('input', () => {
+                const val = this.settingsAiDefaultModel.value.trim();
+                if (this.settingsAiModelSelect && Array.from(this.settingsAiModelSelect.options).some(o => o.value === val)) {
+                    this.settingsAiModelSelect.value = val;
+                } else if (this.settingsAiModelSelect) {
+                    this.settingsAiModelSelect.value = '';
+                }
+                this.updatePriceBadgeForModel(val);
+            });
+        }
 
         // Load existing settings and check status
         this.loadSettings();
@@ -36,21 +67,26 @@ class SystemSettings {
             const response = await fetch('/api/settings');
             if (response.ok) {
                 const settings = await response.json();
-                
-                // Show warning banner if key is missing
+
+                this.providers = settings.providers || [];
+                this.renderProviderOptions();
+
+                // Show warning alert if key is missing
                 if (!settings.hasAiApiKey) {
-                    if (this.setupWarningBanner) this.setupWarningBanner.style.display = 'block';
+                    if (this.setupWarningAlert) this.setupWarningAlert.style.display = 'block';
                 } else {
-                    if (this.setupWarningBanner) this.setupWarningBanner.style.display = 'none';
+                    if (this.setupWarningAlert) this.setupWarningAlert.style.display = 'none';
                 }
 
                 // Set placeholders and values
                 this.settingsAiApiUrl.value = settings.aiApiUrl || '';
-                this.settingsAiDefaultModel.value = settings.aiDefaultModel || 'qwen/qwen3.5-flash-02-23';
+                this.settingsAiDefaultModel.value = settings.aiDefaultModel || 'qwen/qwen3.7-flash';
+
+                this.syncProviderSelectFromUrl();
 
                 this.settingsAiApiKey.value = '';
-                this.settingsAiApiKey.placeholder = settings.hasAiApiKey ? '****** (configured)' : 'Enter OpenRouter API Key';
-                
+                this.settingsAiApiKey.placeholder = settings.hasAiApiKey ? '****** (configured)' : 'Enter API Key';
+
                 this.settingsTelegramToken.value = '';
                 this.settingsTelegramToken.placeholder = settings.hasTelegramBotToken ? '****** (configured)' : 'Enter Telegram Bot Token';
 
@@ -65,6 +101,9 @@ class SystemSettings {
 
                 this.settingsXaiApiKey.value = '';
                 this.settingsXaiApiKey.placeholder = settings.hasXaiApiKey ? '****** (configured)' : 'Enter X.AI API Key';
+
+                // Asynchronously fetch live OpenRouter models & pricing
+                this.loadOpenRouterModels();
             }
         } catch (err) {
             console.error('Error loading settings:', err);
@@ -72,7 +111,158 @@ class SystemSettings {
         }
     }
 
+    async loadOpenRouterModels() {
+        try {
+            const response = await fetch('/api/ai/openrouter-models');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && Array.isArray(data.models)) {
+                    this.openRouterModels = data.models;
+                    this.renderOpenRouterModelSelect();
+                    this.updatePriceBadgeForModel(this.settingsAiDefaultModel.value.trim());
+                }
+            }
+        } catch (err) {
+            console.warn('Failed to load live OpenRouter models:', err);
+        }
+    }
+
+    toggleModelSelectVisibility(show) {
+        if (!this.settingsAiModelSelect) return;
+        if (window.jQuery && $.fn.select2) {
+            const $select = $(this.settingsAiModelSelect);
+            if (show) {
+                $select.next('.select2-container').show();
+            } else {
+                $select.next('.select2-container').hide();
+            }
+        } else {
+            this.settingsAiModelSelect.style.display = show ? 'block' : 'none';
+        }
+    }
+
+    renderOpenRouterModelSelect() {
+        if (!this.settingsAiModelSelect) return;
+
+        const currentModel = (this.settingsAiDefaultModel.value || '').trim();
+
+        if (window.jQuery && $.fn.select2 && $(this.settingsAiModelSelect).data('select2')) {
+            $(this.settingsAiModelSelect).select2('destroy');
+        }
+
+        this.settingsAiModelSelect.innerHTML = '<option value="">-- Search 200+ OpenRouter models --</option>';
+
+        this.openRouterModels.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.textContent = `${m.name || m.id} [${m.formattedPrice}]`.trim();
+            this.settingsAiModelSelect.appendChild(opt);
+        });
+
+        if (currentModel && this.openRouterModels.some(m => m.id === currentModel)) {
+            this.settingsAiModelSelect.value = currentModel;
+        }
+
+        const isOpenRouter = this.settingsAiProvider && this.settingsAiProvider.value === 'openrouter';
+
+        if (window.jQuery && $.fn.select2) {
+            const $select = $(this.settingsAiModelSelect);
+            $select.select2({
+                placeholder: 'Search 200+ OpenRouter models...',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $select.off('change.select2').on('change.select2', (e) => {
+                const val = e.target.value;
+                if (val) {
+                    this.settingsAiDefaultModel.value = val;
+                    this.updatePriceBadgeForModel(val);
+                }
+            });
+
+            this.toggleModelSelectVisibility(isOpenRouter);
+        } else {
+            this.settingsAiModelSelect.style.display = isOpenRouter ? 'block' : 'none';
+        }
+    }
+
+    updatePriceBadgeForModel(modelId) {
+        if (!this.aiModelPriceBadge) return;
+        if (!modelId) {
+            this.aiModelPriceBadge.style.display = 'none';
+            return;
+        }
+
+        const modelInfo = this.openRouterModels.find(m => m.id === modelId);
+        if (modelInfo) {
+            this.aiModelPriceBadge.style.display = 'block';
+            const ctxStr = modelInfo.context_length ? ` | <b>Context:</b> ${Math.round(modelInfo.context_length / 1024)}k` : '';
+            if (modelInfo.isFree) {
+                this.aiModelPriceBadge.innerHTML = `🎁 <b>Price:</b> FREE model${ctxStr}`;
+            } else {
+                const formatPrice = (num) => parseFloat(num.toFixed(4)).toString();
+                this.aiModelPriceBadge.innerHTML = `💰 <b>Pricing (per 1M tokens):</b> Prompt: $${formatPrice(modelInfo.promptPricePerM)} | Comp: $${formatPrice(modelInfo.completionPricePerM)}${ctxStr}`;
+            }
+        } else {
+            this.aiModelPriceBadge.style.display = 'none';
+        }
+    }
+
+    renderProviderOptions() {
+        if (!this.settingsAiProvider) return;
+        this.settingsAiProvider.innerHTML = '';
+        this.providers.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = p.name;
+            this.settingsAiProvider.appendChild(option);
+        });
+    }
+
+    onProviderChange(providerId) {
+        const selected = this.providers.find(p => p.id === providerId);
+        if (!selected) return;
+
+        if (selected.id !== 'custom') {
+            if (selected.baseUrl) {
+                this.settingsAiApiUrl.value = selected.baseUrl;
+            }
+            if (selected.defaultModel) {
+                this.settingsAiDefaultModel.value = selected.defaultModel;
+            }
+        }
+
+        const isOpenRouter = providerId === 'openrouter';
+        if (isOpenRouter) {
+            if (this.openRouterModels.length > 0) {
+                this.renderOpenRouterModelSelect();
+            } else {
+                this.loadOpenRouterModels();
+            }
+        }
+        this.toggleModelSelectVisibility(isOpenRouter);
+
+        this.updatePriceBadgeForModel(this.settingsAiDefaultModel.value.trim());
+    }
+
+    syncProviderSelectFromUrl() {
+        if (!this.settingsAiProvider || !this.providers.length) return;
+        const currentUrl = (this.settingsAiApiUrl.value || '').trim();
+        const matched = this.providers.find(p => p.id !== 'custom' && p.baseUrl === currentUrl);
+        const isOpenRouter = matched && matched.id === 'openrouter';
+        if (matched) {
+            this.settingsAiProvider.value = matched.id;
+        } else {
+            this.settingsAiProvider.value = 'custom';
+        }
+        this.toggleModelSelectVisibility(isOpenRouter);
+        this.updatePriceBadgeForModel(this.settingsAiDefaultModel.value.trim());
+    }
+
     async saveSettings() {
+        if (this.settingsAiApiUrl) this.settingsAiApiUrl.style.borderColor = '';
+
         const aiApiKey = this.settingsAiApiKey.value.trim();
         const aiApiUrl = this.settingsAiApiUrl.value.trim();
         const aiDefaultModel = this.settingsAiDefaultModel.value.trim();
@@ -82,6 +272,16 @@ class SystemSettings {
         const appPassword = this.settingsAppPassword.value.trim();
         const togetherApiKey = this.settingsTogetherApiKey.value.trim();
         const xaiApiKey = this.settingsXaiApiKey.value.trim();
+
+        // Validate required field: AI API URL
+        if (aiApiUrl === '') {
+            if (this.settingsAiApiUrl) {
+                this.settingsAiApiUrl.style.borderColor = '#ff4444';
+                this.settingsAiApiUrl.focus();
+            }
+            alert('⚠️ Validation Error: AI API URL is required!');
+            return;
+        }
 
         const payload = {};
         if (aiApiKey !== '') payload.aiApiKey = aiApiKey === '-' ? '' : aiApiKey;
@@ -94,7 +294,7 @@ class SystemSettings {
         if (togetherApiKey !== '') payload.togetherApiKey = togetherApiKey === '-' ? '' : togetherApiKey;
         if (xaiApiKey !== '') payload.xaiApiKey = xaiApiKey === '-' ? '' : xaiApiKey;
 
-        // If no changes, just go back to chat
+        // If no changes made in input fields, redirect to chat
         if (Object.keys(payload).length === 0) {
             window.location.href = '/';
             return;

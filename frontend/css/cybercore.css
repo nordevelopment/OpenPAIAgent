@@ -32,14 +32,14 @@
     --cyber-lime-300: #bfff80;
     --cyber-lime-500: #8cff00;
     --cyber-lime-700: #59a300;
-    --cyber-void-100: #041d2e;
-    --cyber-void-200: #1f2230;
-    --cyber-void-300: #181a25;
-    --cyber-void-400: #12141d;
-    --cyber-void-500: #0d0e14;
-    --cyber-void-700: #07080c;
-    --cyber-void-800: #040508;
-    --cyber-void-900: #010204;
+    --cyber-void-100: #07263d;
+    --cyber-void-200: #072f3f;
+    --cyber-void-300: #052735;
+    --cyber-void-400: #04232f;
+    --cyber-void-500: #031f2a;
+    --cyber-void-700: #02161f;
+    --cyber-void-800: #02141d;
+    --cyber-void-900: #010a0e;
     --cyber-obsidian-100: #2d2d2d;
     --cyber-obsidian-200: #202020;
     --cyber-obsidian-300: #181818;
@@ -4823,8 +4823,6 @@
 
 .cyber-label-small {
   display: block;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: rgb(225, 225, 225);
+  font-size: 13px;
   margin-top: 5px;
 }

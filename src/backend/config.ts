@@ -12,7 +12,7 @@ export const config = {
   APP_PASSWORD: process.env.APP_PASSWORD || '',
   AI_API_KEY: process.env.AI_API_KEY || '',
   AI_API_URL: process.env.AI_API_URL || '',
-  AI_DEFAULT_MODEL: process.env.AI_DEFAULT_MODEL || 'qwen/qwen3.5-flash-02-23',
+  AI_DEFAULT_MODEL: process.env.AI_DEFAULT_MODEL || 'qwen/qwen3.7-flash',
   AI_EMBEDDING_MODEL: process.env.AI_EMBEDDING_MODEL || 'Qwen/Qwen3-Embedding-8B',
   AI_EMBEDDING_DIM: parseInt(process.env.AI_EMBEDDING_DIM || '4096'),
   AI_MAX_HISTORY_MESSAGES: process.env.AI_MAX_HISTORY_MESSAGES || 30,

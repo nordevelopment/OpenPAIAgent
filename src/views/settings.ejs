@@ -8,7 +8,56 @@
     <!-- Use absolute paths starting with slash since static path prefix is '/' -->
     <link href="/css/cybercore.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/chat.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="/js/theme.js"></script>
+    <style>
+        /* Select2 Cyber Theme Customization */
+        .select2-container--default .select2-selection--single {
+            background-color: var(--color-bg-card, #111625) !important;
+            border: 1px solid var(--color-border, rgba(0, 255, 136, 0.3)) !important;
+            border-radius: 4px !important;
+            height: 38px !important;
+            padding: 4px 8px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--color-text-main, #e2e8f0) !important;
+            font-family: var(--font-mono, monospace) !important;
+            line-height: 28px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+        }
+
+        .select2-dropdown {
+            background-color: #0f1422 !important;
+            border: 1px solid rgba(0, 255, 136, 0.4) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8) !important;
+            color: #e2e8f0 !important;
+            font-family: var(--font-mono, monospace) !important;
+        }
+
+        .select2-search__field {
+            background-color: #1a2035 !important;
+            color: #00ff88 !important;
+            border: 1px solid rgba(0, 255, 136, 0.3) !important;
+            font-family: var(--font-mono, monospace) !important;
+            border-radius: 4px !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: rgba(0, 255, 136, 0.2) !important;
+            color: #00ff88 !important;
+        }
+
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: rgba(0, 255, 136, 0.1) !important;
+            color: #00ff88 !important;
+        }
+    </style>
 </head>
 
 <body class="cyber-theme" style="overflow: auto;">
@@ -22,8 +71,8 @@
                 </div>
             </div>
 
-            <div id="setupWarningBanner" class="warning-banner">
-                ⚠️ FIRST LAUNCH SETUP: Please configure the AI API Key below to enable chat functions.
+            <div id="setupWarningAlert" class="cyber-warning-alert">
+                ⚠️ PREVIEW MODE: Please configure the AI API Key below to enable chat functions.
             </div>
 
             <div class="settings-form-container">
@@ -39,38 +88,48 @@
                         <option value="dark">🌙 Cyber Dark (Default)</option>
                         <option value="light">☀️ Modern Light</option>
                     </select>
-                    <small
-                        style="display: block; font-family: var(--font-mono); font-size: 12px; color: var(--color-text-muted); margin-top: 5px;">
-                        Select your preferred color theme for the interface.</small>
+                    <small class="cyber-label-small">Select your preferred color theme for the interface.</small>
                 </div>
 
                 <div class="form-group">
-                    <label class="cyber-label">AI
-                        API URL</label>
+                    <label class="cyber-label">AI Provider Preset</label>
+                    <select id="settingsAiProvider" class="cyber-select"
+                        style="width: 100%; font-family: var(--font-mono); padding: 8px;">
+                        <option value="custom">Loading providers...</option>
+                    </select>
+                    <small class="cyber-label-small">
+                        Select a provider preset to automatically set completion URL and model options.</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="cyber-label">AI API URL <span style="color: #ff4444;">*</span></label>
                     <input type="text" id="settingsAiApiUrl" class="cyber-input"
                         placeholder="https://openrouter.ai/api/v1/chat/completions">
                     <small class="cyber-label-small">
-                        Configure
-                        the LLM completions URL. Leave default or change for OpenAI, LM Studio, Ollama, etc.</small>
+                        Configure the LLM completions URL. Automatically set by preset or customize manually.</small>
                 </div>
 
                 <div class="form-group">
-                    <label class="cyber-label">AI
-                        Model</label>
-                    <input type="text" id="settingsAiDefaultModel" class="cyber-input"
-                        placeholder="qwen/qwen3.5-flash-02-23">
+                    <label class="cyber-label">AI Model</label>
+                    <select id="settingsAiModelSelect" class="cyber-select"
+                        style="width: 100%; font-family: var(--font-mono); padding: 8px; margin-bottom: 8px; display: none;">
+                        <option value="">Select a model...</option>
+                    </select>
+                    <input type="text" id="settingsAiDefaultModel" class="cyber-input" placeholder="qwen/qwen3.7-flash"
+                        autocomplete="off">
+                    <div id="aiModelPriceBadge"
+                        style="display: none; font-family: var(--font-mono); font-size: 12px; color: #00ff88; margin-top: 6px; padding: 6px 10px; background: rgba(0, 255, 136, 0.08); border-radius: 4px; border: 1px solid rgba(0, 255, 136, 0.2);">
+                    </div>
                     <small class="cyber-label-small">
-                        Configure
-                        the default model identifier (e.g. qwen/qwen3.5-flash-02-23, or llama3 for Ollama).</small>
+                        Select model from dropdown or type any custom model ID.</small>
                 </div>
 
                 <div class="form-group">
-                    <label class="cyber-label">AI API Key</label>
+                    <label class="cyber-label">AI API Key <span style="color: #ff4444;">*</span></label>
                     <input type="password" id="settingsAiApiKey" class="cyber-input" placeholder="Not configured">
                     <small class="cyber-label-small">
-                        Required.
-                        Used for LLM chat. Enter new key to update, leave empty to keep current, or enter '-' to
-                        clear.</small>
+                        Required. Used for LLM chat. Enter new key to update, leave empty to keep current, or enter '-'
+                        to clear.</small>
                 </div>
 
                 <div class="form-group">

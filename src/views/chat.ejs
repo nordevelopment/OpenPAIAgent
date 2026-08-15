@@ -17,7 +17,7 @@
 
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar cyber-bg-primary">
+        <div class="sidebar">
             <div class="logo-panel">
                 <div class="logo cyber-nav__brand" data-text="Open PAIAgent">
                     Open PAIAgent
@@ -48,7 +48,8 @@
             </div>
 
             <div class="sidebar-panel">
-                <button id="btnOpenAgents" class="cyber-btn cyber-btn--cyan w-100" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <button id="btnOpenAgents" class="cyber-btn cyber-btn--cyan w-100"
+                    style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <span>🤖</span> AGENTS HUB
                 </button>
             </div>
@@ -79,7 +80,8 @@
             <div class="chat-header cyber-tile--bottom">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div class="system-status" id="system-status">SYSTEM INITIALIZING...</div>
-                    <span id="activeAgentBadge" class="cyber-tag --cyan" style="cursor: pointer; display: none;" title="CLICK TO CHANGE AGENT">AGENT: MAIN</span>
+                    <span id="activeAgentBadge" class="cyber-tag --cyan" style="cursor: pointer; display: none;"
+                        title="CLICK TO CHANGE AGENT">AGENT: MAIN</span>
                 </div>
 
                 <a href="/tasks" id="btnOpenTasks" class="cyber-btn cyber-btn--green">
@@ -87,12 +89,11 @@
                 </a>
             </div>
 
-            <!-- Setup Warning Banner -->
-            <div id="setupWarningBanner"
-                style="display: none; background: rgba(255, 0, 85, 0.15); border-bottom: 1px solid var(--cyber-secondary); padding: 12px 20px; font-family: var(--font-mono); font-size: 13px; color: var(--cyber-secondary); text-align: center; text-shadow: 0 0 5px var(--cyber-secondary); animation: flicker 0.15s infinite;">
-                ⚠️ SYSTEM OFFLINE: AI API Key is not configured. Please open <a href="#" id="setupWarningLink"
-                    style="color: var(--cyber-primary); text-decoration: underline;">Settings</a> to configure your API
-                keys.
+            <!-- Setup Warning Alert -->
+            <div id="setupWarningAlert" class="cyber-warning-alert">
+                ⚠️ PREVIEW MODE: AI API Key is not configured. Please open <a href="/settings"
+                    id="setupWarningLink">Settings</a> to enter your API key
+                for LLM chat completions.
             </div>
 
             <div class="chat-messages" id="chatMessages">
@@ -117,19 +118,22 @@
                     <textarea id="messageInput" class="cyber-textarea"
                         placeholder="Enter the message or task"></textarea>
                 </div>
-                <div class="send-button-container" style="display: flex; flex-direction: column; gap: 8px; justify-content: flex-end;">
+                <div class="send-button-container"
+                    style="display: flex; flex-direction: column; gap: 8px; justify-content: flex-end;">
 
-                    <label for="input-image-file" class="cyber-btn cyber-btn--cyan cyber-btn--sm"
-                        title="ATTACH IMAGE" style="padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline points="21 15 16 10 5 21"/>
+                    <label for="input-image-file" class="cyber-btn cyber-btn--cyan cyber-btn--sm" title="ATTACH IMAGE"
+                        style="padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
                         </svg>
                     </label>
                     <input type="file" id="input-image-file" accept="image/*" style="display:none;">
 
-                    <button id="sendButton" class="cyber-btn cyber-btn--cyan" title="SEND MESSAGE" style="padding: 8px 12px; display: flex; align-items: center; justify-content: center;">
+                    <button id="sendButton" class="cyber-btn cyber-btn--cyan" title="SEND MESSAGE"
+                        style="padding: 8px 12px; display: flex; align-items: center; justify-content: center;">
                         <svg class="send-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                         </svg>
@@ -157,7 +161,8 @@
             </div>
 
             <div class="agents-view-body" style="flex: 1; overflow-y: auto; padding: 25px;">
-                <div style="margin-bottom: 20px; color: var(--color-text-secondary); font-family: var(--font-mono); font-size: 13px;">
+                <div
+                    style="margin-bottom: 20px; color: var(--color-text-secondary); font-family: var(--font-mono); font-size: 13px;">
                     // Select an agent to start a new chat session, or edit/delete existing agents.
                 </div>
                 <div id="agentsGridContainer" class="agents-grid">

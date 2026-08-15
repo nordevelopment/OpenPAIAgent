@@ -22,6 +22,7 @@ class AIAgentChat {
         this.agentsGridContainer = document.getElementById('agentsGridContainer');
         this.activeAgentBadge = document.getElementById('activeAgentBadge');
         this.activeAgentId = 'main_agent';
+        this.hasAiApiKey = true;
 
         this.inputImageFile = document.getElementById('input-image-file');
         this.imagePreviewContainer = document.getElementById('imagePreviewContainer');
@@ -239,12 +240,16 @@ class AIAgentChat {
 
             this.updateStatus(response);
 
-            // Redirect to setup settings page if main AI key is missing
+            // Check AI API Key status and show setup warning alert on chat page if missing
+            const setupWarningAlert = document.getElementById('setupWarningAlert');
             const settingsResponse = await fetch('/api/settings');
             if (settingsResponse.ok) {
                 const settings = await settingsResponse.json();
+                this.hasAiApiKey = !!settings.hasAiApiKey;
                 if (!settings.hasAiApiKey) {
-                    window.location.href = '/settings';
+                    if (setupWarningAlert) setupWarningAlert.style.display = 'block';
+                } else {
+                    if (setupWarningAlert) setupWarningAlert.style.display = 'none';
                 }
             }
 
@@ -291,6 +296,11 @@ class AIAgentChat {
         const message = this.messageInput.value.trim();
         const image = this.selectedImageBase64;
         if (!message && !image) return;
+
+        if (!this.hasAiApiKey) {
+            this.addMessage('⚠️ **AI API Key is missing.** Please open [Settings](/settings) to configure your AI API Key to enable LLM chat functions.', 'agent');
+            return;
+        }
 
         console.log('Sending message:', { message, hasImage: !!image, sessionId: this.sessionId });
 
