@@ -9,6 +9,7 @@
     --cyber-cyan-600: #00c4cc;
     --cyber-cyan-700: #0097a7;
     --cyber-cyan-900: #005d6a;
+    --cyber-cyan-1000: #002a2f;
     --cyber-magenta-500: #ff2a6d;
     --cyber-magenta-700: #b31248;
     --cyber-yellow-500: #fcee0a;
@@ -53,7 +54,7 @@
     --cyber-white-200: #edf2f7;
     --cyber-white-300: #e2e8f0;
     --cyber-holo-light-bg: #f0fdfa;
-    --cyber-background: #021920cc;
+    --cyber-background: #031f2acc;
     --cyber-glass: rgba(255, 255, 255, 0.05);
     --cyber-glass-cyan: rgba(0, 240, 255, 0.05);
     --cyber-glass-magenta: rgba(255, 42, 109, 0.05);

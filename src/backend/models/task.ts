@@ -12,6 +12,8 @@ export interface Task {
   result?: string;
   run_at?: string;
   is_auto?: number;
+  repeat_interval?: number | null;
+  cron_expression?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -22,6 +24,8 @@ export interface CreateTask {
   result?: string;
   run_at?: string;
   is_auto?: number;
+  repeat_interval?: number | null;
+  cron_expression?: string | null;
 }
 
 export class TaskModel {
@@ -38,7 +42,9 @@ export class TaskModel {
       status: dto.status || 'ready',
       result: dto.result || null,
       run_at: dto.run_at || null,
-      is_auto: dto.is_auto !== undefined ? dto.is_auto : 0
+      is_auto: dto.is_auto !== undefined ? dto.is_auto : 0,
+      repeat_interval: dto.repeat_interval ?? null,
+      cron_expression: dto.cron_expression ?? null
     });
   }
 

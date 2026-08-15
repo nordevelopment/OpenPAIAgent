@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { AgentService } from '../src/backend/ai/AgentService.js';
 import { FileSystemManager } from '../src/backend/services/FileSystemManager.js';
+import { AITools } from '../src/backend/ai/AITools.js';
 import path from 'path';
 
 describe('Security Features', () => {
@@ -32,6 +33,51 @@ describe('Security Features', () => {
       const allowedRoot = fsManager['allowedRoots'][0];
       const bypassPath = allowedRoot + '_secret/secret.txt';
       expect(() => fsManager['validatePath'](bypassPath)).toThrow(/Access denied/);
+    });
+  });
+
+  describe('AITools requireReadBeforeWrite policy', () => {
+    const aiTools = new AITools();
+    const testFile = 'test_security_file.txt';
+
+    it('should allow creating a new non-existing file without prior read_file', async () => {
+      aiTools.clearReadHistory();
+      const res = await aiTools.executeTool({
+        name: 'write_file',
+        arguments: { path: testFile, content: 'initial content' }
+      }, 'session_a');
+
+      expect(res.result).toBe('File written successfully.');
+    });
+
+    it('should block overwriting an existing file without prior read_file in session', async () => {
+      const res = await aiTools.executeTool({
+        name: 'write_file',
+        arguments: { path: testFile, content: 'blind overwrite' }
+      }, 'session_b');
+
+      expect(res.result).toContain('SECURITY_POLICY_DENIED');
+    });
+
+    it('should allow overwriting after calling read_file in the same session', async () => {
+      await aiTools.executeTool({
+        name: 'read_file',
+        arguments: { path: testFile }
+      }, 'session_b');
+
+      const res = await aiTools.executeTool({
+        name: 'write_file',
+        arguments: { path: testFile, content: 'safe overwrite after read' }
+      }, 'session_b');
+
+      expect(res.result).toBe('File written successfully.');
+    });
+
+    it('cleanup test file', async () => {
+      await aiTools.executeTool({
+        name: 'delete_item',
+        arguments: { path: testFile }
+      }, 'session_b');
     });
   });
 

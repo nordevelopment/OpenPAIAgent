@@ -15,16 +15,27 @@ import logger from '../utils/logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+export interface AIToolCall {
+  id: string;
+  type: 'function';
+  function: {
+    name: string;
+    arguments: string; // Обычно JSON-строка от LLM
+  };
+}
+
+
 export interface AIMessages {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string | AiContentItem[] | null;
   tool_call_id?: string; // For role: 'tool' 
-  tool_calls?: any[];    // For role: 'assistant' when calling tools
+  tool_calls?: AIToolCall[];    // For role: 'assistant' when calling tools
 }
 
 export interface AIResponse {
   content: string;
-  toolCalls?: any[]; // If the AI wants to call a tool
+  toolCalls?: AIToolCall[];
   reasoning?: string;
   usage?: {
     promptTokens: number;

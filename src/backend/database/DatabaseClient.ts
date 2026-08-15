@@ -210,6 +210,22 @@ export class DatabaseClient {
       // Ignore error if column already exists
     }
 
+    // Migration: Add repeat_interval column to tasks table
+    try {
+      this.db.exec('ALTER TABLE tasks ADD COLUMN repeat_interval INTEGER DEFAULT NULL');
+      logger.info('DatabaseClient: Added repeat_interval column to tasks table');
+    } catch (e) {
+      // Ignore error if column already exists
+    }
+
+    // Migration: Add cron_expression column to tasks table
+    try {
+      this.db.exec('ALTER TABLE tasks ADD COLUMN cron_expression TEXT DEFAULT NULL');
+      logger.info('DatabaseClient: Added cron_expression column to tasks table');
+    } catch (e) {
+      // Ignore error if column already exists
+    }
+
     // Migration: Add title column to sessions table if it doesn't exist
     try {
       this.db.exec('ALTER TABLE sessions ADD COLUMN title TEXT');
