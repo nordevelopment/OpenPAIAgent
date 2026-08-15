@@ -23,15 +23,14 @@ export class TelegramBot {
     this.chatManager = chatManager ?? null;
 
     if (!botToken) {
-      logger.info('[Telegram] Bot not initialized, bot token is empty.');
       this.isEnabled = false;
       return;
     }
 
     this.bot = new Telegraf(botToken);
     this.isEnabled = true;
+    logger.info('[Telegram] Bot initialized successfully.');
 
-    // console.log('[Telegram] Bot initialized successfully.');
     this.setupHandlers();
   }
 

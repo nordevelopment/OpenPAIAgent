@@ -48,23 +48,9 @@
             </div>
 
             <div class="sidebar-panel">
-                <div class="sessions-title cyber-text-glow">AGENTS</div>
-                <select id="agentSelector" class="cyber-select">
-                    <!-- Agents will be loaded here -->
-                </select>
-                <button id="btnEditAgent" class="cyber-btn">
-                    EDIT AGENT
+                <button id="btnOpenAgents" class="cyber-btn cyber-btn--cyan w-100" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>🤖</span> AGENTS HUB
                 </button>
-                <div class="agent-buttons" style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button id="btnCreateAgent" class="cyber-btn cyber-btn--green"
-                        style="flex: 1; font-size: 11px; padding: 8px;">
-                        CREATE AGENT
-                    </button>
-                    <button id="btnDeleteAgent" class="cyber-btn cyber-btn--magenta"
-                        style="flex: 1; font-size: 11px; padding: 8px;">
-                        DELETE AGENT
-                    </button>
-                </div>
             </div>
 
             <div class="sidebar-footer">
@@ -89,9 +75,12 @@
         </div>
 
         <!-- Chat Area -->
-        <div class="chat-area">
+        <div class="chat-area" id="chatViewContainer">
             <div class="chat-header cyber-tile--bottom">
-                <div class="system-status" id="system-status">SYSTEM INITIALIZING...</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="system-status" id="system-status">SYSTEM INITIALIZING...</div>
+                    <span id="activeAgentBadge" class="cyber-tag --cyan" style="cursor: pointer; display: none;" title="CLICK TO CHANGE AGENT">AGENT: MAIN</span>
+                </div>
 
                 <a href="/tasks" id="btnOpenTasks" class="cyber-btn cyber-btn--green">
                     📋 TASK MANAGER
@@ -145,6 +134,34 @@
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                         </svg>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agents Management View (Right Panel) -->
+        <div class="chat-area" id="agentsViewContainer" style="display: none;">
+            <div class="chat-header cyber-tile--bottom">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🤖</span>
+                    <div class="system-status cyber-text-glow" style="font-size: 16px;">AGENTS HUB</div>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button id="btnCreateAgentTop" class="cyber-btn cyber-btn--green">
+                        + CREATE AGENT
+                    </button>
+                    <button id="btnBackToChat" class="cyber-btn cyber-btn--cyan">
+                        ← BACK TO CHAT
+                    </button>
+                </div>
+            </div>
+
+            <div class="agents-view-body" style="flex: 1; overflow-y: auto; padding: 25px;">
+                <div style="margin-bottom: 20px; color: var(--color-text-secondary); font-family: var(--font-mono); font-size: 13px;">
+                    // Select an agent to start a new chat session, or edit/delete existing agents.
+                </div>
+                <div id="agentsGridContainer" class="agents-grid">
+                    <!-- Agent cards will be rendered dynamically -->
                 </div>
             </div>
         </div>

@@ -38,7 +38,11 @@ export class AgentService {
      * Returns only the safe folder name.
      */
     private getSafeAgentId(agentId: string): string {
-        return agentId.replace(/[^a-zA-Z0-9_-]/g, '').trim().toLowerCase();
+        return agentId
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '_')
+            .replace(/[^a-z0-9_-]/g, '');
     }
 
     /**

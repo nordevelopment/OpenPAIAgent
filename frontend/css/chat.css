@@ -569,8 +569,13 @@
         }
 
         .editor-textarea:focus {
-            background: rgba(1, 22, 33, 0.3) !important;
+            background: rgba(1, 20, 30, 0.3) !important;
             box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.05);
+        }
+
+        [data-theme="light"] .editor-textarea:focus {
+            background: rgb(242, 242, 242) !important;
+            box-shadow: inset 0 0 15px rgba(209, 209, 209, 0.05);
         }
 
         .editor-textarea::-webkit-scrollbar {
@@ -789,4 +794,131 @@
         [data-theme="light"] .task-table td {
             border-bottom: 1px solid #e2e8f0 !important;
             color: #1e293b !important;
+        }
+
+        /* Agents View Grid & Cards */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .agent-card {
+            background: var(--cyber-void-500);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card:hover {
+            border-color: var(--cyber-primary);
+            box-shadow: 0 0 18px rgba(0, 255, 136, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .agent-card.active {
+            border-color: var(--cyber-primary);
+            border-left: 5px solid var(--cyber-primary);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .agent-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .agent-card-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cyber-primary);
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .agent-card-id {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+        }
+
+        .agent-card-body {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .agent-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            border-top: 1px solid var(--color-border-default);
+            padding-top: 15px;
+        }
+
+        /* Light Theme Overrides for Agents View */
+        [data-theme="light"] .agent-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        [data-theme="light"] .agent-card:hover {
+            border-color: #0284c7;
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.15);
+        }
+
+        [data-theme="light"] .agent-card.active {
+            border-color: #0284c7;
+            border-left: 5px solid #0284c7;
+            background: #f8fafc;
+        }
+
+        [data-theme="light"] .agent-card-title {
+            color: #0284c7;
+        }
+
+        [data-theme="light"] .agent-card-actions {
+            border-top-color: #e2e8f0;
+        }
+
+
+        .editor-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(6, 8, 16, 0.9);
+            border-top: 1px solid var(--cyber-green-500);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            height: 40px;
+            box-sizing: border-box;
+        }
+
+        [data-theme="light"] .editor-status-bar {
+            background: rgb(248, 248, 248);
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .editor-body {
+            flex: 1;
+            position: relative;
+            background: rgba(2, 4, 8, 0.7);
+            overflow: hidden;
+        }
+
+        [data-theme="light"] .editor-body {
+            background: #fdfdfd;
         }

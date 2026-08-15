@@ -13,10 +13,15 @@ class AIAgentChat {
         this.btnClearMemory = document.getElementById('btnClearMemory');
         this.btnNewChat = document.getElementById('btnNewChat');
         this.sessionsList = document.getElementById('sessionsList');
-        this.agentSelector = document.getElementById('agentSelector');
-        this.btnEditAgent = document.getElementById('btnEditAgent');
-        this.btnCreateAgent = document.getElementById('btnCreateAgent');
-        this.btnDeleteAgent = document.getElementById('btnDeleteAgent');
+        
+        this.btnOpenAgents = document.getElementById('btnOpenAgents');
+        this.btnBackToChat = document.getElementById('btnBackToChat');
+        this.btnCreateAgentTop = document.getElementById('btnCreateAgentTop');
+        this.chatViewContainer = document.getElementById('chatViewContainer');
+        this.agentsViewContainer = document.getElementById('agentsViewContainer');
+        this.agentsGridContainer = document.getElementById('agentsGridContainer');
+        this.activeAgentBadge = document.getElementById('activeAgentBadge');
+        this.activeAgentId = 'main_agent';
 
         this.inputImageFile = document.getElementById('input-image-file');
         this.imagePreviewContainer = document.getElementById('imagePreviewContainer');
@@ -83,28 +88,49 @@ class AIAgentChat {
         this.btnClearChat.addEventListener('click', () => this.clearChat());
         this.btnClearMemory.addEventListener('click', () => this.clearMemory());
         this.btnNewChat.addEventListener('click', () => this.createNewChat());
-        if (this.btnEditAgent) {
-            this.btnEditAgent.addEventListener('click', () => {
-                const selectedAgent = this.agentSelector.value;
-                if (selectedAgent) {
-                    window.location.href = `/edit-agent/${selectedAgent}`;
-                } else {
-                    alert('Please select an agent first.');
-                }
-            });
+
+        if (this.btnOpenAgents) {
+            this.btnOpenAgents.addEventListener('click', () => this.showAgentsView());
         }
-        if (this.btnCreateAgent) {
-            this.btnCreateAgent.addEventListener('click', () => this.createAgent());
+        if (this.btnBackToChat) {
+            this.btnBackToChat.addEventListener('click', () => this.showChatView());
         }
-        if (this.btnDeleteAgent) {
-            this.btnDeleteAgent.addEventListener('click', () => this.deleteAgent());
+        if (this.btnCreateAgentTop) {
+            this.btnCreateAgentTop.addEventListener('click', () => this.createAgent());
         }
+        if (this.activeAgentBadge) {
+            this.activeAgentBadge.addEventListener('click', () => this.showAgentsView());
+        }
+
         this.initializeServices();
 
         // Ждем загрузки истории и сессий
         await this.loadAgents();
         await this.getHistory();
         await this.getSessions();
+    }
+
+    showAgentsView() {
+        if (this.chatViewContainer && this.agentsViewContainer) {
+            this.chatViewContainer.style.display = 'none';
+            this.agentsViewContainer.style.display = 'flex';
+            this.loadAgents();
+        }
+    }
+
+    showChatView() {
+        if (this.chatViewContainer && this.agentsViewContainer) {
+            this.agentsViewContainer.style.display = 'none';
+            this.chatViewContainer.style.display = 'flex';
+        }
+    }
+
+    updateActiveAgentBadge() {
+        if (this.activeAgentBadge) {
+            const name = (this.activeAgentId || 'main_agent').replace(/_/g, ' ').toUpperCase();
+            this.activeAgentBadge.textContent = `AGENT: ${name}`;
+            this.activeAgentBadge.style.display = 'inline-block';
+        }
     }
 
 
@@ -128,9 +154,10 @@ class AIAgentChat {
         }
     }
 
-    async createNewChat() {
+    async createNewChat(targetAgentId = null) {
         try {
-            const agentId = this.agentSelector.value;
+            const agentId = targetAgentId || this.activeAgentId || 'main_agent';
+            this.activeAgentId = agentId;
             const response = await fetch('/api/sessions/create', {
                 method: 'POST',
                 headers: {
@@ -142,12 +169,19 @@ class AIAgentChat {
             if (data.success) {
                 this.sessionId = data.sessionId;
                 this.chatMessages.innerHTML = '';
-                this.getHistory();
-                this.getSessions();
+                this.updateActiveAgentBadge();
+                await this.getHistory();
+                await this.getSessions();
             }
         } catch (error) {
             console.error('Failed to create new chat:', error);
         }
+    }
+
+    async startChatWithAgent(agentId) {
+        this.activeAgentId = agentId;
+        await this.createNewChat(agentId);
+        this.showChatView();
     }
 
     async deleteSession(sessionId) {
@@ -560,13 +594,72 @@ class AIAgentChat {
             const data = await response.json();
             console.log('Agents data:', data);
 
-            if (data.agents && Array.isArray(data.agents)) {
-                this.agentSelector.innerHTML = '';
-                data.agents.forEach(agent => {
-                    const option = document.createElement('option');
-                    option.value = agent;
-                    option.textContent = agent.replace('_', ' ').toUpperCase();
-                    this.agentSelector.appendChild(option);
+            if (this.agentsGridContainer && data.agents && Array.isArray(data.agents)) {
+                this.agentsGridContainer.innerHTML = '';
+                data.agents.forEach(agentId => {
+                    const card = document.createElement('div');
+                    const isCurrent = (agentId === this.activeAgentId);
+                    card.className = `agent-card ${isCurrent ? 'active' : ''}`;
+
+                    const nameFormatted = agentId.replace(/_/g, ' ').toUpperCase();
+                    let icon = '🤖';
+                    if (agentId.includes('coder') || agentId.includes('developer') || agentId.includes('code')) icon = '💻';
+                    else if (agentId.includes('search') || agentId.includes('scrape') || agentId.includes('web')) icon = '🕸️';
+                    else if (agentId.includes('writer') || agentId.includes('doc') || agentId.includes('pdf')) icon = '📄';
+                    else if (agentId.includes('art') || agentId.includes('image')) icon = '🎨';
+
+                    const isMainAgent = agentId === 'main_agent';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="agent-card-header">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 26px;">${icon}</span>
+                                    <div>
+                                        <div class="agent-card-title">${nameFormatted}</div>
+                                        <div class="agent-card-id">ID: ${agentId}</div>
+                                    </div>
+                                </div>
+                                ${isCurrent ? '<span class="cyber-tag --cyan">ACTIVE</span>' : ''}
+                            </div>
+                            <div class="agent-card-body">
+                                ${isMainAgent ? 'Default primary assistant with full multi-tool execution capabilities.' : 'Custom specialized AI Agent personality and custom skills configuration.'}
+                            </div>
+                        </div>
+                        <div class="agent-card-actions">
+                            <button class="cyber-btn cyber-btn--green btn-start-agent-chat" data-agent-id="${agentId}" style="flex: 2; font-size: 11px; padding: 6px 10px;">
+                                ⚡ START CHAT
+                            </button>
+                            <button class="cyber-btn btn-edit-agent" data-agent-id="${agentId}" style="flex: 1; font-size: 11px; padding: 6px 8px;">
+                                ✏️ EDIT
+                            </button>
+                            ${!isMainAgent ? `
+                                <button class="cyber-btn cyber-btn--magenta btn-delete-agent" data-agent-id="${agentId}" style="flex: 1; font-size: 11px; padding: 6px 8px;">
+                                    🗑️ DELETE
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+
+                    card.querySelector('.btn-start-agent-chat').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.startChatWithAgent(agentId);
+                    });
+
+                    card.querySelector('.btn-edit-agent').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.location.href = `/edit-agent/${agentId}`;
+                    });
+
+                    const deleteBtn = card.querySelector('.btn-delete-agent');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.deleteAgent(agentId);
+                        });
+                    }
+
+                    this.agentsGridContainer.appendChild(card);
                 });
             }
         } catch (error) {
@@ -744,19 +837,17 @@ class AIAgentChat {
     }
 
     async createAgent() {
-        const agentId = prompt('Enter a unique ID for the new agent (e.g. coding_expert). Only letters, numbers, dashes and underscores are allowed:');
-        if (agentId === null) return; // Cancelled
+        const rawInput = prompt('Enter a name for the new agent (e.g. "Coding Expert" or "code_reviewer"):');
+        if (rawInput === null) return; // Cancelled
         
-        const trimmedId = agentId.trim().toLowerCase();
-        if (!trimmedId) {
-            alert('Agent ID cannot be empty.');
-            return;
-        }
+        let cleanedId = rawInput
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '_')           // Automatically convert spaces to underscores
+            .replace(/[^a-z0-9_-]/g, '');    // Remove unsupported special characters
 
-        // Validate agent ID format
-        const validFormat = /^[a-z0-9_-]+$/;
-        if (!validFormat.test(trimmedId)) {
-            alert('Invalid Agent ID. Only lowercase letters, numbers, dashes (-) and underscores (_) are allowed.');
+        if (!cleanedId) {
+            alert('Agent ID cannot be empty or contain only invalid characters.');
             return;
         }
 
@@ -766,14 +857,13 @@ class AIAgentChat {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ agentId: trimmedId }),
+                body: JSON.stringify({ agentId: cleanedId }),
             });
 
             const data = await response.json();
             if (data.success) {
-                alert(`Agent "${trimmedId}" successfully created!`);
+                alert(`Agent "${cleanedId}" successfully created!`);
                 await this.loadAgents();
-                this.agentSelector.value = trimmedId;
             } else {
                 throw new Error(data.message || 'Failed to create agent');
             }
@@ -783,12 +873,9 @@ class AIAgentChat {
         }
     }
 
-    async deleteAgent() {
-        const selectedAgent = this.agentSelector.value;
-        if (!selectedAgent) {
-            alert('Please select an agent to delete.');
-            return;
-        }
+    async deleteAgent(targetAgentId) {
+        const selectedAgent = targetAgentId;
+        if (!selectedAgent) return;
 
         if (selectedAgent === 'main_agent') {
             alert('Cannot delete the default "main_agent".');
@@ -808,14 +895,10 @@ class AIAgentChat {
             const data = await response.json();
             if (data.success) {
                 alert(`Agent "${selectedAgent}" deleted successfully.`);
-                
-                // Reload agent list
+                if (this.activeAgentId === selectedAgent) {
+                    this.activeAgentId = 'main_agent';
+                }
                 await this.loadAgents();
-                
-                // Default back to main_agent
-                this.agentSelector.value = 'main_agent';
-
-                // Reload sessions and history to make sure database updates are synchronized on frontend
                 await this.getSessions();
                 await this.getHistory();
             } else {
