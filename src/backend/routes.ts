@@ -17,6 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import { getAIProvidersList } from './config/ai_providers.js';
 import { openRouterService } from './services/OpenRouterService.js';
+import { exec } from 'child_process';
 
 
 
@@ -629,6 +630,44 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
     return reply.send({ success: true, message: 'Settings saved successfully' });
   });
+
+  // Open workspace directory in OS File Explorer / Finder
+  const openWorkspaceHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const workspacePath = path.resolve(process.cwd(), 'workspace');
+      if (!fs.existsSync(workspacePath)) {
+        fs.mkdirSync(workspacePath, { recursive: true });
+      }
+      
+      const platform = process.platform;
+      
+      let command = '';
+      if (platform === 'win32') {
+        command = `start "" "${workspacePath}"`;
+      } else if (platform === 'darwin') {
+        command = `open "${workspacePath}"`;
+      } else {
+        command = `xdg-open "${workspacePath}"`;
+      }
+
+      exec(command, (err) => {
+        if (err) {
+          request.log.warn({ err }, 'Primary open command failed, trying fallback');
+          if (platform === 'win32') {
+            exec(`explorer "${workspacePath}"`);
+          }
+        }
+      });
+
+      return reply.send({ success: true, path: workspacePath });
+    } catch (err: any) {
+      request.log.error({ err }, 'Failed to open workspace directory');
+      return reply.status(500).send({ success: false, message: err?.message || 'Failed to open workspace' });
+    }
+  };
+
+  app.post('/api/workspace/open', openWorkspaceHandler);
+  app.get('/api/workspace/open', openWorkspaceHandler);
 
   // Start automatic task scheduler (scans for ready auto-tasks every 60 seconds)
   const taskInterval = setInterval(async () => {

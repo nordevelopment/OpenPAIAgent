@@ -354,19 +354,15 @@
             border: 1px solid var(--color-border-default);
         }
 
-        /* Cyber Tags */
-        .cyber-tag {
+        .cyber-tag--cyan {
             font-family: monospace;
             font-size: 10px;
             padding: 2px 8px;
             border-radius: 2px;
             text-transform: uppercase;
-        }
-
-        .cyber-tag.--cyan {
             background: rgba(0, 212, 255, 0.2);
-            color: var(--cyber-secondary);
-            border: 1px solid var(--cyber-secondary);
+            color: var(--cyber-lime-500);
+            border: 1px solid var(--cyber-lime-500);
         }
 
 

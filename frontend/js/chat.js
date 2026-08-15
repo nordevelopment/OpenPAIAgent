@@ -13,8 +13,9 @@ class AIAgentChat {
         this.btnClearMemory = document.getElementById('btnClearMemory');
         this.btnNewChat = document.getElementById('btnNewChat');
         this.sessionsList = document.getElementById('sessionsList');
-        
+
         this.btnOpenAgents = document.getElementById('btnOpenAgents');
+        this.btnOpenWorkspace = document.getElementById('btnOpenWorkspace');
         this.btnBackToChat = document.getElementById('btnBackToChat');
         this.btnCreateAgentTop = document.getElementById('btnCreateAgentTop');
         this.chatViewContainer = document.getElementById('chatViewContainer');
@@ -93,6 +94,9 @@ class AIAgentChat {
         if (this.btnOpenAgents) {
             this.btnOpenAgents.addEventListener('click', () => this.showAgentsView());
         }
+        if (this.btnOpenWorkspace) {
+            this.btnOpenWorkspace.addEventListener('click', () => this.openWorkspaceFolder());
+        }
         if (this.btnBackToChat) {
             this.btnBackToChat.addEventListener('click', () => this.showChatView());
         }
@@ -123,6 +127,31 @@ class AIAgentChat {
         if (this.chatViewContainer && this.agentsViewContainer) {
             this.agentsViewContainer.style.display = 'none';
             this.chatViewContainer.style.display = 'flex';
+        }
+    }
+
+    async openWorkspaceFolder() {
+        try {
+            const response = await fetch('/api/workspace/open', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            });
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || `Server returned ${response.status}`);
+            }
+            const data = await response.json();
+            if (data.success) {
+                this.addSystemMessage(`Opened workspace folder: ${data.path}`, null, null, true, '📁');
+            } else {
+                alert(data.message || 'Failed to open workspace folder.');
+            }
+        } catch (error) {
+            console.error('Error opening workspace:', error);
+            alert(`Error opening workspace folder: ${error.message}`);
         }
     }
 
@@ -349,7 +378,7 @@ class AIAgentChat {
 
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n\n');
-                
+
                 // Keep the last partial event in the buffer
                 buffer = lines.pop() || '';
 
@@ -395,7 +424,7 @@ class AIAgentChat {
             const toolName = eventData.name;
             const args = eventData.arguments || {};
             let detailText = '';
-            
+
             // Format details depending on the tool
             if (toolName === 'write_file' || toolName === 'read_file' || toolName === 'delete_item' || toolName === 'get_file_info' || toolName === 'generate_pdf') {
                 detailText = `Path: ${args.path || ''}`;
@@ -421,7 +450,7 @@ class AIAgentChat {
         } else if (eventName === 'tool_done') {
             const toolName = eventData.name;
             let resultText = '';
-            
+
             if (typeof eventData.result === 'string') {
                 resultText = eventData.result;
             } else {
@@ -447,7 +476,7 @@ class AIAgentChat {
             }
         } else if (eventName === 'final') {
             this.hideTyping();
-            
+
             // Restore default text to typing indicator for next execution
             const typingTextEl = this.typingIndicator.querySelector('.typing-text');
             if (typingTextEl) {
@@ -630,7 +659,7 @@ class AIAgentChat {
                                         <div class="agent-card-id">ID: ${agentId}</div>
                                     </div>
                                 </div>
-                                ${isCurrent ? '<span class="cyber-tag --cyan">ACTIVE</span>' : ''}
+                                ${isCurrent ? '<span class="cyber-tag--cyan">ACTIVE</span>' : ''}
                             </div>
                             <div class="agent-card-body">
                                 ${isMainAgent ? 'Default primary assistant with full multi-tool execution capabilities.' : 'Custom specialized AI Agent personality and custom skills configuration.'}
@@ -749,13 +778,14 @@ class AIAgentChat {
                     sessionDiv.dataset.sessionId = session.id;
 
                     const date = new Date(session.created_at).toLocaleString('ru-RU');
-                    const displayTitle = session.title ? session.title : (session.id.substring(0, 20) + '...');
+                    const hasCustomTitle = session.title && session.title.trim() !== '' && !session.title.startsWith('session_');
+                    const displayTitle = hasCustomTitle ? session.title : '';
 
                     sessionDiv.innerHTML = `
                         <div class="session-info" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                             <div style="flex: 1; min-width: 0; cursor: pointer;">
                                 <div class="session-time">[${date}]</div>
-                                <div class="session-id" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${session.title || session.id}">${displayTitle}</div>
+                                <div class="session-id" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${hasCustomTitle ? session.title : 'Click ✏️ to rename session'}">${displayTitle}</div>
                             </div>
                             <div style="display: flex; gap: 4px; align-items: center; margin-left: 10px;">
                                 <button class="session-rename cyber-btn" data-session-id="${session.id}" title="RENAME SESSION" style="padding: 2px 6px; font-size: 11px;">✏️</button>
@@ -849,7 +879,7 @@ class AIAgentChat {
     async createAgent() {
         const rawInput = prompt('Enter a name for the new agent (e.g. "Coding Expert" or "code_reviewer"):');
         if (rawInput === null) return; // Cancelled
-        
+
         let cleanedId = rawInput
             .trim()
             .toLowerCase()
@@ -923,7 +953,7 @@ class AIAgentChat {
     async renameSession(sessionId, currentTitle) {
         const newTitle = prompt('Enter new session title:', currentTitle);
         if (newTitle === null) return; // Cancelled
-        
+
         const trimmed = newTitle.trim();
         if (!trimmed) {
             alert('Session title cannot be empty.');

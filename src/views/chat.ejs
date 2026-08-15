@@ -47,10 +47,14 @@
                 </div>
             </div>
 
-            <div class="sidebar-panel">
+            <div class="sidebar-panel" style="display: flex; flex-direction: column; gap: 10px;">
                 <button id="btnOpenAgents" class="cyber-btn cyber-btn--cyan w-100"
                     style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <span>🤖</span> AGENTS HUB
+                </button>
+                <button id="btnOpenWorkspace" class="cyber-btn cyber-btn--cyan w-100" title="OPEN WORKSPACE FOLDER"
+                    style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>📁</span> WORKSPACE
                 </button>
             </div>
 
@@ -80,7 +84,7 @@
             <div class="chat-header cyber-tile--bottom">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div class="system-status" id="system-status">SYSTEM INITIALIZING...</div>
-                    <span id="activeAgentBadge" class="cyber-tag --cyan" style="cursor: pointer; display: none;"
+                    <span id="activeAgentBadge" class="cyber-tag--cyan" style="cursor: pointer; display: none;"
                         title="CLICK TO CHANGE AGENT">AGENT: MAIN</span>
                 </div>
 
