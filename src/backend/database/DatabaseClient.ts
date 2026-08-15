@@ -213,7 +213,6 @@ export class DatabaseClient {
     // Migration: Add repeat_interval column to tasks table
     try {
       this.db.exec('ALTER TABLE tasks ADD COLUMN repeat_interval INTEGER DEFAULT NULL');
-      logger.info('DatabaseClient: Added repeat_interval column to tasks table');
     } catch (e) {
       // Ignore error if column already exists
     }

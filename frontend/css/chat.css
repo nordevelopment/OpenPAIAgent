@@ -6,7 +6,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--cyber-void-900);
+            background: var(--cyber-emerald-dark);
             min-height: 100vh;
             color: var(--cyber-primary);
             overflow: hidden;
@@ -58,6 +58,20 @@
             font-size: 1.1rem;
             font-weight: 700;
             letter-spacing: 2px;
+        }
+
+        .settings-form-container {
+            /* background: var(--color-bg-secondary); */
+            border: 2px solid var(--cyber-primary);
+            padding: 10px 20px;
+            width: 550px;
+            max-width: 100%;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
 
         /* Chat Area */
@@ -921,4 +935,20 @@
 
         [data-theme="light"] .editor-body {
             background: #fdfdfd;
+        }
+
+        .warning-banner {
+            display: none;
+            background: var(--cyber-red-100);
+            border: 1px solid var(--cyber-red-500);
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--cyber-red-800);
+            text-align: center;
+            animation: flicker 0.15s infinite;
+            margin-bottom: 4px;
+            width: 550px;
+            max-width: 100%;
+            border-radius: 4px;
         }

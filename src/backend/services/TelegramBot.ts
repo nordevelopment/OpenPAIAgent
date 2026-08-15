@@ -226,7 +226,7 @@ export class TelegramBot {
    */
   async start(): Promise<void> {
     if (!this.isEnabled || !this.bot) {
-      logger.warn('[Telegram] Cannot start: bot is not enabled');
+      logger.warn('[Telegram bot] not started, to start set up the Telegram Bot Token and allowed User IDs in the settings');
       return;
     }
     try {

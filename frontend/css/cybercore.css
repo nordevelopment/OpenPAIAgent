@@ -9,7 +9,7 @@
     --cyber-cyan-600: #00c4cc;
     --cyber-cyan-700: #0097a7;
     --cyber-cyan-900: #005d6a;
-    --cyber-cyan-1000: #002a2f;
+    --cyber-emerald-dark: #010e0f;
     --cyber-magenta-500: #ff2a6d;
     --cyber-magenta-700: #b31248;
     --cyber-yellow-500: #fcee0a;
@@ -24,9 +24,11 @@
     --cyber-purple-300: #d687ff;
     --cyber-purple-500: #bd00ff;
     --cyber-purple-700: #7a00a3;
+    --cyber-red-100: #f7c9cd;
     --cyber-red-300: #ff6b6b;
     --cyber-red-500: #ff003c;
-    --cyber-red-700: #b3002a;
+    --cyber-red-700: #86061f;
+    --cyber-red-800: #86061f;
     --cyber-lime-300: #bfff80;
     --cyber-lime-500: #8cff00;
     --cyber-lime-700: #59a300;
@@ -65,7 +67,7 @@
     --cyber-border: rgba(0, 240, 255, 0.2);
     --color-bg-primary: var(--cyber-void-700);
     --color-bg-secondary: var(--cyber-void-400);
-    --color-bg-tertiary: var(--cyber-void-300);
+    --color-bg-tertiary: #041820;
     --color-bg-elevated: var(--cyber-void-200);
     --color-text-primary: var(--cyber-chrome-100);
     --color-text-secondary: var(--cyber-chrome-200);
@@ -637,13 +639,13 @@
     --input-accent: var(--cyber-cyan-500);
     display: block;
     width: 100%;
-    padding: var(--space-xs) var(--space-sm);
+    padding: var(--space-2xs) var(--space-sm);
     border: 1px solid var(--color-border-default);
     border-left: 3px solid var(--input-accent);
     font-family: var(--font-mono);
     font-size: var(--text-base);
     color: var(--color-text-primary);
-    background: var(--color-bg-tertiary);
+    background: #041820;
     transition: all var(--duration-fast);
     outline: none;
   }
@@ -659,6 +661,15 @@
 
   .cyber-field {
     margin-bottom: var(--space-md);
+  }
+
+  .cyber-label {
+    display: block;
+    font-family: var(--font-mono);
+    color: var(--cyber-secondary);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
   }
 
   .cyber-field__label {
@@ -4810,4 +4821,10 @@
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
-/*# sourceMappingURL=cybercore.css.map */
+.cyber-label-small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgb(225, 225, 225);
+  margin-top: 5px;
+}
