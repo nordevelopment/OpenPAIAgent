@@ -448,13 +448,17 @@ class AIAgentChat {
                 detailText = JSON.stringify(args);
             }
 
+            const isPlan = toolName === 'write_file' && typeof args.path === 'string' && /plan\.md$/i.test(args.path);
+            const titleText = isPlan ? 'Tool execution started: Planning' : `Tool execution started: ${toolName}`;
+            const toolIcon = isPlan ? '📋' : '⚙️';
+
             // Update typing indicator text
             const typingTextEl = this.typingIndicator.querySelector('.typing-text');
             if (typingTextEl) {
-                typingTextEl.textContent = `EXECUTING TOOL: ${toolName.toUpperCase()}...`;
+                typingTextEl.textContent = isPlan ? 'PLANNING PROJECT (PLAN.MD)...' : `EXECUTING TOOL: ${toolName.toUpperCase()}...`;
             }
 
-            this.addSystemMessage(`Tool execution started: ${toolName}`, detailText, null, false);
+            this.addSystemMessage(titleText, detailText, null, false, toolIcon);
         } else if (eventName === 'tool_done') {
             const toolName = eventData.name;
             let resultText = '';
@@ -470,13 +474,17 @@ class AIAgentChat {
                 resultText = resultText.substring(0, 250) + '\n... [TRUNCATED]';
             }
 
+            const isPlan = toolName === 'write_file' && (this.activePlanExecution || (resultText && /plan/i.test(resultText)));
+            const titleDoneText = isPlan ? 'Tool completed: Planning' : `Tool completed: ${toolName}`;
+            const toolDoneIcon = isPlan ? '📋' : '⚙️';
+
             // Update typing indicator text
             const typingTextEl = this.typingIndicator.querySelector('.typing-text');
             if (typingTextEl) {
-                typingTextEl.textContent = `TOOL ${toolName.toUpperCase()} COMPLETED`;
+                typingTextEl.textContent = isPlan ? 'PLANNING COMPLETED' : `TOOL ${toolName.toUpperCase()} COMPLETED`;
             }
 
-            this.addSystemMessage(`Tool completed: ${toolName}`, null, `Result: ${resultText}`, true);
+            this.addSystemMessage(titleDoneText, null, `Result: ${resultText}`, true, toolDoneIcon);
         } else if (eventName === 'skills_loaded') {
             const skills = eventData.skills || [];
             if (skills.length > 0) {

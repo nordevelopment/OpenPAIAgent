@@ -97,6 +97,14 @@ export class ChatManager {
       console.error('[ChatManager] Failed to fetch relevant memories context:', err);
     }
 
+    // Build session context for workspace project isolation
+    const sessionFolderName = sessionId.startsWith('session_') || sessionId.startsWith('telegram_')
+      ? sessionId
+      : `session_${sessionId}`;
+    const sessionWorkspaceDir = `workspace/${sessionFolderName}`;
+    const sessionContext = `[CURRENT SESSION CONTEXT]\nSession ID: ${sessionId}\nAssigned Workspace Folder: ${sessionWorkspaceDir}/`;
+    const combinedSystemContext = [sessionContext, memoriesContext].filter(Boolean).join('\n\n');
+
     // Run loop of interaction with AI (maximum iterations from config, to not go into infinite loop)
     const maxSteps = config.AI_MAX_THINKING_STEPS || 25;
     for (let i = 0; i < maxSteps; i++) {
@@ -109,8 +117,8 @@ export class ChatManager {
       const session = await this.sessionManager.getSession(sessionId);
       const agentId = session?.agent_id || config.default_agent;
 
-      // Query AI (pass history, agent ID, description of tools and memories context)
-      const aiResponse = await this.aiClient.sendMessage(history, agentId, availableTools, memoriesContext);
+      // Query AI (pass history, agent ID, description of tools, session and memories context)
+      const aiResponse = await this.aiClient.sendMessage(history, agentId, availableTools, combinedSystemContext);
 
       if (aiResponse.reasoning) {
         lastReasoning = aiResponse.reasoning;

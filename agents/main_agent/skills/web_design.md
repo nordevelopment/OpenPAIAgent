@@ -1,30 +1,34 @@
-Keywords: дизайн, лендинг, верстка, web_design, landing, UI, UX, CSS, HTML, сайт, вебдизайн, веб-дизайн, интерфейс
+Keywords: дизайн, лендинг, верстка, web_design, landing, UI, UX, CSS, HTML, сайт, вебдизайн, веб-дизайн, интерфейс, frontend, portfolio, landing page, website
 
-When asked to design web pages, landing pages, or user interfaces, always apply high-end UI/UX standards:
-1. **Premium Cyberpunk/Modern Aesthetic**: 
-   - Use curated color palettes (e.g., sleek dark modes with electric neon accents like cyan `#00f0ff` or magenta `#ff007f`).
-   - Implement glassmorphism using CSS backdrop-filter (`background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);`).
-   - Use premium fonts from Google Fonts (e.g., 'Inter', 'Outfit', or monospace fonts like 'Fira Code' for technical vibes).
-2. **Aesthetic Grid & Layouts**:
-   - Use CSS Grid and Flexbox for modern, robust layouts.
-   - Design responsiveness from the ground up (mobile-first or fully flexible media queries).
-3. **Interactive Elements & Micro-animations**:
-   - Add smooth transition effects to buttons, links, and cards (`transition: all 0.3s ease;`).
-   - Implement subtle glow hover effects (`box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);`).
-4. **Structure for an AI Agent Developer Portfolio**:
-   - **Hero Section**: Catchy cyberpunk title (e.g., "Architect of Autonomous Minds"), subtitle explaining value, CTA button ("Deploy an Agent"), and a glowing code block/terminal mock.
-   - **Agent Capabilities**: 3-column card grid demonstrating agents (e.g., "Database Agent", "Automated Dev", "Customer Support Bot") with hover scaling.
-   - **Tech Stack**: Interactive badges representing technologies (Gemini, Node.js, SQLite-vec, TypeScript).
-   - **Process Workflow**: Beautiful timeline diagram explaining how agents are engineered and integrated.
-   - **Contact / CTA**: Sleek, border-glowing feedback form.
-5. **Strict No-Tailwind Rule (Unless Asked)**:
-   - Output HTML containing complete, self-contained, clean `<style>` tags with Vanilla CSS.
-6. **Clarify Missing Information**:
-   - If there is not enough specific context, requirements, or data to build a tailored design, stop and ask the user clarifying questions first instead of fully hallucinating all the details.
-7. **Conversion-Focused Copywriting & Content Structure**:
-   - **Strict No-Generics Rule**: Never write dry placeholder texts like "We make quality software for your success" or "Our services". Instead, write engaging, high-conversion, sales-oriented copy.
-   - **Target Business Pain Points**: Address real business issues directly. Include sections/headings like "Why your business is losing clients" or "Stop drowning in CRM routine".
-   - **Detailed Capability Copy**: Explain specific, high-value outcomes for services (e.g., instead of just "Chatbots", write "24/7 AI-Support: resolve 90% of customer inquiries instantly without human staff").
-   - **AI Agents vs Traditional Bots Comparison**: Design an attractive comparison table showing why AI Agents with vector memory and RAG are superior to dumb button-based bots.
-   - **Tailored Tech Stack Descriptions**: Explicitly outline the value of each technology (e.g. OpenAI/Gemini/DeepSeek for cognitive reasoning, RAG for hallucinations-free data access, SQLite-vec for long-term memory).
-   - **Compelling CTAs**: Replace generic button labels with action-oriented, value-driven text (e.g., "Request Free Automation Audit", "Calculate AI Agent ROI").
+# SKILL: Adaptive UI/UX & Web Design Architect
+
+When asked to design web pages, landing pages, websites, or user interfaces, dynamically tailor the visual aesthetic, layout architecture, and copywriting to the specific domain, audience, and goal of the project:
+
+## 1. Dynamic Color Mood Strategy
+- **👑 User Explicit Preference (Top Priority):** If the user requests specific colors or themes (e.g., "purple", "neon green", "clean white minimalist", "black & gold"), strictly follow their request.
+- **🎨 Mood-Driven Palette Generation (When no color is specified):** 
+  Synthesize a unique, harmonized 4-6 color palette in `:root` CSS variables that reflects the domain personality:
+  - **High-Load Architecture & Core Engineering:** Deep navy/charcoal backgrounds with crisp electric blues, ice cyan, or steel accents (robust, engineered, reliable).
+  - **AI Research & Future Tech:** Dark obsidian/midnight space with rich royal violet, electric fuchsia, or quantum cyan (visionary, cutting-edge).
+  - **Enterprise, Cloud & Security:** Dark graphite with emerald green, mint frost, or teal accents (stable, verified, secure).
+  - **FinTech & Luxury B2B:** Monochromatic slate/matte black with warm champagne gold, bronze, or platinum highlights (authoritative, premium).
+  - **High-Velocity Automation & Speed:** Pitch black with energetic solar amber, tangerine, or crimson glow (fast, dynamic, powerful).
+  - **Creative Portfolio & Studio:** High-contrast editorial backgrounds with acid lime, vibrant coral, or bold electric primaries (artistic, memorable).
+  - **Corporate, Services, Medical & Real Estate:** Warm minimalist or airy light theme with trustworthy sapphire, sage, or warm stone tones.
+
+## 2. Universal Visual & UI/UX Standards
+- **Cohesive Color Variables:** Define clean CSS variables in `:root` for backgrounds, surfaces, borders, text, and accent colors with good contrast ratios.
+- **Clean Typography:** Use robust modern system font stacks (e.g., `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif` or monospace `ui-monospace, 'Cascadia Code', monospace`) OR optionally import web fonts if appropriate for the aesthetic. Establish clear visual hierarchy (Hero h1, section h2, cards h3, body, captions).
+- **Depth & Polish:** Use modern CSS techniques: glassmorphism (`backdrop-filter: blur()`), subtle border glows, refined box-shadows, layered background radial gradients and grid overlays.
+- **Micro-Interactions:** Add smooth transitions (`transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);`), hover lifts (`transform: translateY(-4px)`), button glow effects, and interactive feedback.
+- **Flawless Responsiveness:** Design mobile-friendly layouts using CSS Flexbox and Grid with flexible breakpoints (`@media (max-width: 768px)`).
+
+## 3. Dynamic Conversion Structure & Copywriting
+- **Target Audience & Value Proposition:** Create tailored headlines and value propositions derived directly from the user's input facts.
+- **Zero Generics Rule:** Avoid cliché placeholders (e.g., "Welcome to our site", "Best quality"). Write sharp, benefit-driven copy with action verbs, pain-point hooks, and realistic metrics.
+- **Logical Flow:** Structure sections dynamically to tell a compelling story (Hero -> Social Proof / Stats -> Core Features / Services -> Interactive Showcase / Comparison / Differentiator -> Process / Timeline -> Lead Capture / Call to Action -> Footer).
+- **Action-Oriented CTAs:** Use high-intent, descriptive button labels tailored to the offering.
+
+## 4. Delivery Standard
+- Produce a single, self-contained, clean HTML5 file with embedded `<style>` (Vanilla CSS) and `<script>` (Vanilla JS) inside the assigned session workspace directory.
+- Strictly NO external CSS frameworks (like Tailwind or Bootstrap) unless explicitly requested.
