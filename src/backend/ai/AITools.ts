@@ -145,7 +145,7 @@ export class AITools {
     GracefulFallbackMiddleware
   ];
 
-  constructor(private memoryManager?: MemoryManager) {}
+  constructor(private memoryManager?: MemoryManager) { }
 
   /**
    * Register a custom tool middleware
@@ -279,7 +279,8 @@ export class AITools {
       }
       case 'generate_docx': {
         const docxPath = this.fsManager.validatePath(args.path as string);
-        await this.officeService.createDocx(docxPath, args.document as DocxDocumentData);
+        const content = (args.content as string) || (args.markdown as string) || (args.document as DocxDocumentData);
+        await this.officeService.createDocx(docxPath, content);
         result = `Word document successfully generated and saved to ${args.path}`;
         break;
       }
@@ -472,9 +473,9 @@ export class AITools {
               steps: {
                 type: 'integer',
                 minimum: 1,
-                maximum: 50,
+                maximum: 30,
                 default: 25,
-                description: 'The number of inference steps (quality/time trade-off).'
+                description: 'The number of steps (quality/time trade-off).'
               },
               provider: {
                 type: 'string',
@@ -541,38 +542,15 @@ export class AITools {
         type: 'function',
         function: {
           name: 'generate_excel',
-          description: 'Generates a highly-formatted Excel spreadsheet (.xlsx) in the workspace.',
+          description: 'Generates a formatted Excel spreadsheet (.xlsx) in the workspace.',
           parameters: {
             type: 'object',
             properties: {
               path: { type: 'string', description: 'Output path relative to workspace (e.g. sales_report.xlsx).' },
               sheets: {
                 type: 'array',
-                description: 'Array of sheet definitions to add to the workbook.',
-                items: {
-                  type: 'object',
-                  properties: {
-                    name: { type: 'string', description: 'Name of the sheet.' },
-                    columns: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          header: { type: 'string', description: 'Header column title.' },
-                          key: { type: 'string', description: 'Row object key (data identifier).' },
-                          width: { type: 'integer', description: 'Width of column (optional).' }
-                        },
-                        required: ['header', 'key']
-                      }
-                    },
-                    rows: {
-                      type: 'array',
-                      description: 'Row data objects mapping keys to values (numbers, strings, formulas like {"formula": "A2*B2"}).',
-                      items: { type: 'object' }
-                    }
-                  },
-                  required: ['name', 'columns', 'rows']
-                }
+                description: 'Array of sheets [{ name: "Sheet1", columns: [{ header: "Name", key: "name" }], rows: [{ name: "Alice" }] }]',
+                items: { type: 'object' }
               }
             },
             required: ['path', 'sheets']
@@ -583,37 +561,14 @@ export class AITools {
         type: 'function',
         function: {
           name: 'generate_docx',
-          description: 'Generates a professionally-formatted Word document (.docx) in the workspace with paragraphs, headers, and tables.',
+          description: 'Generates a Word document (.docx) in the workspace from Markdown content (supports # titles, ## headers, tables, bold, lists).',
           parameters: {
             type: 'object',
             properties: {
-              path: { type: 'string', description: 'Output path relative to workspace (e.g. proposal.docx).' },
-              document: {
-                type: 'object',
-                properties: {
-                  title: { type: 'string', description: 'Title of the document (placed at the top).' },
-                  paragraphs: {
-                    type: 'array',
-                    description: 'Sequential elements of paragraphs or tables.',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        text: { type: 'string', description: 'Paragraph text content (leave empty for table).' },
-                        heading: { type: 'string', enum: ['Heading1', 'Heading2', 'Heading3'], description: 'Header style (optional).' },
-                        bold: { type: 'boolean', description: 'Bold text (optional).' },
-                        italic: { type: 'boolean', description: 'Italic text (optional).' },
-                        alignment: { type: 'string', enum: ['left', 'center', 'right', 'justify'], description: 'Text alignment (optional).' },
-                        type: { type: 'string', enum: ['table'], description: 'Specify "table" to render a grid (optional).' },
-                        headers: { type: 'array', items: { type: 'string' }, description: 'Table column headers (required for table).' },
-                        rows: { type: 'array', items: { type: 'array', items: { type: 'string' } }, description: 'Table body cells matrix (required for table).' }
-                      }
-                    }
-                  }
-                },
-                required: ['title', 'paragraphs']
-              }
+              content: { type: 'string', description: 'Document content in Markdown format.' },
+              path: { type: 'string', description: 'Output file path relative to workspace (e.g. report.docx).' }
             },
-            required: ['path', 'document']
+            required: ['content', 'path']
           }
         }
       }
