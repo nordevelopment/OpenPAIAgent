@@ -121,6 +121,20 @@ export class WebPageContent {
     }): Promise<string> {
         if (!url) return 'Error: URL is required';
 
+        // Auto-convert Google/Bing search URLs to DuckDuckGo HTML to bypass CAPTCHA blocks
+        if (url.includes('google.com/search') || url.includes('google.ru/search') || url.includes('bing.com/search')) {
+            try {
+                const parsedUrl = new URL(url);
+                const query = parsedUrl.searchParams.get('q');
+                if (query) {
+                    logger.info({ originalUrl: url }, 'WebPageContent: Automatically routing search URL to DuckDuckGo HTML for unblocked search results');
+                    url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+                }
+            } catch {
+                // Ignore URL parse error
+            }
+        }
+
         // SSRF protection: validate URL scheme and resolved IP address
         const validation = await validateAndResolveUrl(url);
         if (!validation.valid) {
