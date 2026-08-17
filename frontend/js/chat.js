@@ -524,19 +524,19 @@ class AIAgentChat {
                     <p class="welcome-title">Select a quick starter or enter your prompt below:</p>
                 </div>
                 <div class="welcome-cards">
-                    <div class="welcome-card" data-prompt="Write clean and structured TypeScript code for ">
+                    <div class="welcome-card" data-prompt="Write clean and structured code">
                         <div class="welcome-card-header">
                             <span class="card-icon">💻</span>
                             <span class="card-title">Coding & Scripts</span>
                         </div>
                         <div class="card-desc">Code generation, refactoring, debugging & database integration</div>
                     </div>
-                    <div class="welcome-card" data-prompt="Search the web for the latest information on ">
+                    <div class="welcome-card" data-prompt="Fetch web page content from URL: ">
                         <div class="welcome-card-header">
                             <span class="card-icon">🌐</span>
-                            <span class="card-title">Web Search & Scraping</span>
+                            <span class="card-title">Web Scraper & Fetch</span>
                         </div>
-                        <div class="card-desc">Web research, data extraction & live analytics from the web</div>
+                        <div class="card-desc">Extract text, markdown & content from any web page URL</div>
                     </div>
                     <div class="welcome-card" data-action="open-tasks">
                         <div class="welcome-card-header">
@@ -552,7 +552,7 @@ class AIAgentChat {
                         </div>
                         <div class="card-desc">Select or configure specialized AI agent personalities</div>
                     </div>
-                    <div class="welcome-card" data-prompt="Generate an image depicting: ">
+                    <div class="welcome-card" data-prompt="Generate an image: ">
                         <div class="welcome-card-header">
                             <span class="card-icon">🎨</span>
                             <span class="card-title">AI Image Generation</span>
