@@ -121,14 +121,14 @@ export class WebPageContent {
     }): Promise<string> {
         if (!url) return 'Error: URL is required';
 
-        // Auto-convert Google/Bing search URLs to DuckDuckGo HTML to bypass CAPTCHA blocks
-        if (url.includes('google.com/search') || url.includes('google.ru/search') || url.includes('bing.com/search')) {
+        // Auto-convert Google/DuckDuckGo search URLs to Bing Search HTML for unblocked, captcha-free search results
+        if (url.includes('google.com/search') || url.includes('google.ru/search') || url.includes('duckduckgo.com')) {
             try {
                 const parsedUrl = new URL(url);
                 const query = parsedUrl.searchParams.get('q');
                 if (query) {
-                    logger.info({ originalUrl: url }, 'WebPageContent: Automatically routing search URL to DuckDuckGo HTML for unblocked search results');
-                    url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+                    logger.info({ originalUrl: url }, 'WebPageContent: Automatically routing search URL to Bing Search for unblocked results');
+                    url = `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
                 }
             } catch {
                 // Ignore URL parse error

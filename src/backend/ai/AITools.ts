@@ -428,7 +428,7 @@ export class AITools {
         type: 'function',
         function: {
           name: 'fetch_web_page',
-          description: 'Gets web page content or performs web searches. To search the web for information, pass a search URL like https://html.duckduckgo.com/html/?q=YOUR_QUERY. Uses headless browser (Puppeteer) by default to execute JS and render dynamic sites.',
+          description: 'Gets web page content or performs web searches. To search the web for information, pass a search URL like https://www.bing.com/search?q=YOUR_QUERY. Uses headless browser (Puppeteer) or static fetch to render pages.',
           parameters: {
             type: 'object',
             properties: {
