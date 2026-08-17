@@ -5,7 +5,7 @@ Keywords: дизайн, лендинг, верстка, web_design, landing, UI,
 When asked to design web pages, landing pages, websites, or user interfaces, dynamically tailor the visual aesthetic, layout architecture, and copywriting to the specific domain, audience, and goal of the project:
 
 ## 1. Dynamic Color Mood Strategy
-- **👑 User Explicit Preference (Top Priority):** If the user requests specific colors or themes (e.g., "purple", "neon green", "clean white minimalist", "black & gold"), strictly follow their request.
+- **👑 User Explicit Preference (Top Priority):** If the user requests specific colors or themes (e.g., "purple", "neon green", "clean white minimalist", "emerald gold"), strictly follow their request.
 - **🎨 Mood-Driven Palette Generation (When no color is specified):** 
   Synthesize a unique, harmonized 4-6 color palette in `:root` CSS variables that reflects the domain personality:
   - **High-Load Architecture & Core Engineering:** Deep navy/charcoal backgrounds with crisp electric blues, ice cyan, or steel accents (robust, engineered, reliable).
@@ -23,12 +23,22 @@ When asked to design web pages, landing pages, websites, or user interfaces, dyn
 - **Micro-Interactions:** Add smooth transitions (`transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);`), hover lifts (`transform: translateY(-4px)`), button glow effects, and interactive feedback.
 - **Flawless Responsiveness:** Design mobile-friendly layouts using CSS Flexbox and Grid with flexible breakpoints (`@media (max-width: 768px)`).
 
-## 3. Dynamic Conversion Structure & Copywriting
-- **Target Audience & Value Proposition:** Create tailored headlines and value propositions derived directly from the user's input facts.
+## 3. Mandatory Comprehensive Section Blueprint (No Short/Skimpy Pages!)
+Every landing page must be a **rich, comprehensive, production-grade page with at least 6-8 distinct, well-developed sections**. Never output a brief 3-4 block summary. Always include:
+1. **Sticky / Fixed Navigation Bar:** Logo/Brand, anchor links to page sections, and a prominent CTA button.
+2. **High-Impact Hero Section:** Bold value proposition headline, subtitle, dual CTAs, and floating proof metrics/stats (e.g., 13+ Years, 100+ Projects, 99.9% Uptime).
+3. **Core Services / Solutions Matrix:** Detailed multi-column cards with descriptive subheadings, feature checkmarks, and concrete business outcomes.
+4. **Visual Differentiator / Comparison Section:** An interactive capability showcase, comparison table (e.g., "Legacy vs Modern AI Solutions"), or before/after value breakdown.
+5. **Technology & Architecture Stack:** Categorized interactive pills/badges or cards detailing tools, languages, databases, and frameworks.
+6. **Workflow & Methodology ("How It Works"):** 3 to 5 step numbered timeline or process cards explaining the engagement model from audit to deployment.
+7. **Social Proof & Value Guarantee:** Trust badges, key advantages ("Why Work With Me"), ROI guarantees, or case highlights.
+8. **High-Converting Lead Capture Form:** Dedicated contact section with input fields, purpose selector, and strong action CTA.
+9. **Polished Footer:** Brand signature, quick navigation links, copyright, and social/contact channels.
+
+## 4. High-Energy Copywriting Rules
 - **Zero Generics Rule:** Avoid cliché placeholders (e.g., "Welcome to our site", "Best quality"). Write sharp, benefit-driven copy with action verbs, pain-point hooks, and realistic metrics.
-- **Logical Flow:** Structure sections dynamically to tell a compelling story (Hero -> Social Proof / Stats -> Core Features / Services -> Interactive Showcase / Comparison / Differentiator -> Process / Timeline -> Lead Capture / Call to Action -> Footer).
 - **Action-Oriented CTAs:** Use high-intent, descriptive button labels tailored to the offering.
 
-## 4. Delivery Standard
+## 5. Delivery Standard
 - Produce a single, self-contained, clean HTML5 file with embedded `<style>` (Vanilla CSS) and `<script>` (Vanilla JS) inside the assigned session workspace directory.
 - Strictly NO external CSS frameworks (like Tailwind or Bootstrap) unless explicitly requested.
