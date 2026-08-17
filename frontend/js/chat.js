@@ -103,9 +103,6 @@ class AIAgentChat {
         if (this.btnCreateAgentTop) {
             this.btnCreateAgentTop.addEventListener('click', () => this.createAgent());
         }
-        if (this.activeAgentBadge) {
-            this.activeAgentBadge.addEventListener('click', () => this.showAgentsView());
-        }
 
         this.initializeServices();
 
