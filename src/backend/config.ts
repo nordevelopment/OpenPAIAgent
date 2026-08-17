@@ -77,6 +77,9 @@ if (fs.existsSync(configJsonPath)) {
       if (parsed.together_api_key) {
         config.images.together.key = parsed.together_api_key;
       }
+      if (parsed.together_image_model) {
+        config.images.together.model = parsed.together_image_model;
+      }
       if (parsed.xai_api_key) {
         config.images.xai.key = parsed.xai_api_key;
       }

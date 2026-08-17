@@ -476,6 +476,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       hasAppPassword: !!config.APP_PASSWORD,
       appPasswordMasked: config.APP_PASSWORD ? '******' : '',
       hasTogetherApiKey: !!config.images.together.key,
+      togetherImageModel: config.images.together.model || 'black-forest-labs/FLUX.2-dev',
       hasXaiApiKey: !!config.images.xai.key,
       aiApiKeyMasked: config.AI_API_KEY ? '******' : '',
       telegramBotTokenMasked: config.TELEGRAM_BOT_TOKEN ? '******' : '',
@@ -495,8 +496,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   });
 
   // Save system settings
-  app.post('/api/settings', async (request: FastifyRequest<{ Body: { aiApiKey?: string, aiApiUrl?: string, aiDefaultModel?: string, telegramBotToken?: string, allowedTelegramUserIds?: string, appUser?: string, appPassword?: string, togetherApiKey?: string, xaiApiKey?: string } }>, reply: FastifyReply) => {
-    const { aiApiKey, aiApiUrl, aiDefaultModel, telegramBotToken, allowedTelegramUserIds, appUser, appPassword, togetherApiKey, xaiApiKey } = request.body;
+  app.post('/api/settings', async (request: FastifyRequest<{ Body: { aiApiKey?: string, aiApiUrl?: string, aiDefaultModel?: string, telegramBotToken?: string, allowedTelegramUserIds?: string, appUser?: string, appPassword?: string, togetherApiKey?: string, togetherImageModel?: string, xaiApiKey?: string } }>, reply: FastifyReply) => {
+    const { aiApiKey, aiApiUrl, aiDefaultModel, telegramBotToken, allowedTelegramUserIds, appUser, appPassword, togetherApiKey, togetherImageModel, xaiApiKey } = request.body;
 
     const envPath = path.join(process.cwd(), '.env');
     const configJsonPath = path.join(process.cwd(), 'config.json');
@@ -548,6 +549,11 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
         const clean = togetherApiKey!.trim();
         envUpdates.TOGETHER_API_KEY = clean;
         config.images.together.key = clean;
+      }
+      if (togetherImageModel !== undefined) {
+        const clean = togetherImageModel.trim();
+        envUpdates.TOGETHER_IMAGE_MODEL = clean;
+        config.images.together.model = clean;
       }
       if (isNewKey(xaiApiKey)) {
         const clean = xaiApiKey!.trim();
@@ -619,6 +625,11 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       if (isNewKey(togetherApiKey)) {
         configData.together_api_key = togetherApiKey!.trim();
         config.images.together.key = configData.together_api_key;
+      }
+      if (togetherImageModel !== undefined) {
+        const clean = togetherImageModel.trim();
+        configData.together_image_model = clean;
+        config.images.together.model = clean;
       }
       if (isNewKey(xaiApiKey)) {
         configData.xai_api_key = xaiApiKey!.trim();

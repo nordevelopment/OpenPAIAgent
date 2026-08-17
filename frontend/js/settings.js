@@ -14,6 +14,7 @@ class SystemSettings {
         this.settingsAppUser = document.getElementById('settingsAppUser');
         this.settingsAppPassword = document.getElementById('settingsAppPassword');
         this.settingsTogetherApiKey = document.getElementById('settingsTogetherApiKey');
+        this.settingsTogetherImageModel = document.getElementById('settingsTogetherImageModel');
         this.settingsXaiApiKey = document.getElementById('settingsXaiApiKey');
 
         this.providers = [];
@@ -98,6 +99,10 @@ class SystemSettings {
 
                 this.settingsTogetherApiKey.value = '';
                 this.settingsTogetherApiKey.placeholder = settings.hasTogetherApiKey ? '****** (configured)' : 'Enter Together AI API Key';
+
+                if (this.settingsTogetherImageModel) {
+                    this.settingsTogetherImageModel.value = settings.togetherImageModel || 'black-forest-labs/FLUX.2-dev';
+                }
 
                 this.settingsXaiApiKey.value = '';
                 this.settingsXaiApiKey.placeholder = settings.hasXaiApiKey ? '****** (configured)' : 'Enter X.AI API Key';
@@ -271,6 +276,7 @@ class SystemSettings {
         const appUser = this.settingsAppUser.value.trim();
         const appPassword = this.settingsAppPassword.value.trim();
         const togetherApiKey = this.settingsTogetherApiKey.value.trim();
+        const togetherImageModel = this.settingsTogetherImageModel ? this.settingsTogetherImageModel.value.trim() : '';
         const xaiApiKey = this.settingsXaiApiKey.value.trim();
 
         // Validate required field: AI API URL
@@ -292,6 +298,7 @@ class SystemSettings {
         if (appUser !== '') payload.appUser = appUser;
         if (appPassword !== '') payload.appPassword = appPassword === '-' ? '' : appPassword;
         if (togetherApiKey !== '') payload.togetherApiKey = togetherApiKey === '-' ? '' : togetherApiKey;
+        if (togetherImageModel !== '') payload.togetherImageModel = togetherImageModel;
         if (xaiApiKey !== '') payload.xaiApiKey = xaiApiKey === '-' ? '' : xaiApiKey;
 
         // If no changes made in input fields, redirect to chat
