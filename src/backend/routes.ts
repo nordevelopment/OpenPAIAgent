@@ -415,8 +415,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
 
   // Get current session
   app.get('/api/sessions/current', async (request: FastifyRequest, reply: FastifyReply) => {
-    // Hook already checked everything and put ID in request
-    return reply.send({ sessionId: request.sessionId });
+    const session = await chatManager.getSession(request.sessionId);
+    return reply.send({ sessionId: request.sessionId, agentId: session?.agent_id || 'main_agent' });
   });
 
   // Switch to existing session
@@ -436,7 +436,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
       secure: config.ENV === 'production'
     });
 
-    return reply.send({ success: true, sessionId });
+    return reply.send({ success: true, sessionId, agentId: session.agent_id || 'main_agent' });
   });
 
   // Delete session

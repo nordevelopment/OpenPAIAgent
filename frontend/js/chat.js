@@ -178,6 +178,11 @@ class AIAgentChat {
             const data = await response.json();
             console.log('Session API response:', data);
             this.sessionId = data.sessionId;
+            if (data.agentId) {
+                this.activeAgentId = data.agentId;
+            }
+            this.updateActiveAgentBadge();
+            this.updateStatus({ status: 200 });
             console.log('Current session:', this.sessionId);
         } catch (error) {
             console.error('Failed to get current session:', error);
@@ -200,6 +205,7 @@ class AIAgentChat {
                 this.sessionId = data.sessionId;
                 this.chatMessages.innerHTML = '';
                 this.updateActiveAgentBadge();
+                this.updateStatus({ status: 200 });
                 await this.getHistory();
                 await this.getSessions();
             }
@@ -250,7 +256,12 @@ class AIAgentChat {
             const data = await response.json();
             if (data.success) {
                 this.sessionId = sessionId;
+                if (data.agentId) {
+                    this.activeAgentId = data.agentId;
+                }
                 this.chatMessages.innerHTML = '';
+                this.updateActiveAgentBadge();
+                this.updateStatus({ status: 200 });
                 await this.getHistory();
                 await this.getSessions();
             } else {
@@ -287,10 +298,12 @@ class AIAgentChat {
         }
     }
 
-    updateStatus(response) {
+    updateStatus(response = { status: 200 }) {
         console.log('Status:', response);
-        if (response.status === 200) {
-            this.statusElement.textContent = 'ONLINE :: READY';
+        const isOk = typeof response === 'object' ? (response.status === 200 || response.ok) : response === 200;
+        if (isOk) {
+            const formattedAgent = (this.activeAgentId || 'main_agent').replace(/_/g, ' ').toUpperCase();
+            this.statusElement.textContent = `${formattedAgent} :: READY`;
             this.statusElement.classList.add('cyber-text-glow');
         } else {
             this.statusElement.textContent = 'CRITICAL :: CONNECTION_LOST :: RETRYING...';
@@ -496,7 +509,88 @@ class AIAgentChat {
         }
     }
 
+    removeWelcomeState() {
+        const welcomeContainer = document.getElementById('welcomeContainer');
+        if (welcomeContainer) {
+            welcomeContainer.remove();
+        }
+    }
+
+    renderWelcomeState() {
+        if (!this.chatMessages) return;
+        this.chatMessages.innerHTML = `
+            <div class="welcome-container" id="welcomeContainer">
+                <div class="welcome-header">
+                    <p class="welcome-title">Select a quick starter or enter your prompt below:</p>
+                </div>
+                <div class="welcome-cards">
+                    <div class="welcome-card" data-prompt="Write clean and structured TypeScript code for ">
+                        <div class="welcome-card-header">
+                            <span class="card-icon">💻</span>
+                            <span class="card-title">Coding & Scripts</span>
+                        </div>
+                        <div class="card-desc">Code generation, refactoring, debugging & database integration</div>
+                    </div>
+                    <div class="welcome-card" data-prompt="Search the web for the latest information on ">
+                        <div class="welcome-card-header">
+                            <span class="card-icon">🌐</span>
+                            <span class="card-title">Web Search & Scraping</span>
+                        </div>
+                        <div class="card-desc">Web research, data extraction & live analytics from the web</div>
+                    </div>
+                    <div class="welcome-card" data-action="open-tasks">
+                        <div class="welcome-card-header">
+                            <span class="card-icon">📋</span>
+                            <span class="card-title">Task Manager</span>
+                        </div>
+                        <div class="card-desc">Manage background tasks, schedules & recurring workflows</div>
+                    </div>
+                    <div class="welcome-card" data-action="open-agents">
+                        <div class="welcome-card-header">
+                            <span class="card-icon">🤖</span>
+                            <span class="card-title">Agents Hub</span>
+                        </div>
+                        <div class="card-desc">Select or configure specialized AI agent personalities</div>
+                    </div>
+                    <div class="welcome-card" data-prompt="Generate an image depicting: ">
+                        <div class="welcome-card-header">
+                            <span class="card-icon">🎨</span>
+                            <span class="card-title">AI Image Generation</span>
+                        </div>
+                        <div class="card-desc">Create artwork, illustrations & visual assets with AI</div>
+                    </div>
+                    <div class="welcome-card" data-prompt="Create a structured report and save it to files for ">
+                        <div class="welcome-card-header">
+                            <span class="card-icon">📄</span>
+                            <span class="card-title">Docs & Reports</span>
+                        </div>
+                        <div class="card-desc">Generate Markdown, PDF & office documents</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const welcomeCards = this.chatMessages.querySelectorAll('.welcome-card');
+        welcomeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const promptText = card.dataset.prompt;
+                const action = card.dataset.action;
+                if (promptText) {
+                    this.messageInput.value = promptText;
+                    this.messageInput.focus();
+                    this.messageInput.style.height = 'auto';
+                    this.messageInput.style.height = this.messageInput.scrollHeight + 'px';
+                } else if (action === 'open-tasks') {
+                    window.location.href = '/tasks';
+                } else if (action === 'open-agents') {
+                    this.showAgentsView();
+                }
+            });
+        });
+    }
+
     addSystemMessage(title, subtitle, content, isDone = false, icon = '⚙️') {
+        this.removeWelcomeState();
         const messageDiv = document.createElement('div');
         messageDiv.className = `message system`;
         messageDiv.style.alignSelf = 'flex-start';
@@ -528,6 +622,7 @@ class AIAgentChat {
     }
 
     addMessage(content, type, reasoning = null) {
+        this.removeWelcomeState();
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
 
@@ -732,16 +827,23 @@ class AIAgentChat {
             const data = await response.json();
             console.log('History data:', data);
 
+            let addedCount = 0;
             if (data.history && Array.isArray(data.history)) {
                 data.history.forEach(message => {
                     if (message.role === 'tool') return;
                     if (message.role === 'assistant') {
                         if (!message.content && !message.reasoning) return;
                         this.addMessage(message.content, 'agent', message.reasoning);
+                        addedCount++;
                     } else if (message.role === 'user') {
                         this.addMessage(message.content, 'user');
+                        addedCount++;
                     }
                 });
+            }
+
+            if (addedCount === 0) {
+                this.renderWelcomeState();
             }
 
             return data.history;
@@ -844,6 +946,7 @@ class AIAgentChat {
             }
 
             this.chatMessages.innerHTML = '';
+            this.renderWelcomeState();
         } catch (error) {
             console.error('Clear chat error:', error);
             alert('Failed to clear chat history. Please try again.');
