@@ -6,6 +6,9 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/nordevelopment/OpenPAIAgent?style=flat-square)](https://github.com/nordevelopment/OpenPAIAgent/commits/main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
+> ⭐ **Star Us on GitHub!**
+> If you find Open PAIAgent useful or inspiring, please consider giving this repository a star! It helps the project grow and fuels future development. 🚀
+
 <a href="https://nordevelopment.github.io/OpenPAIAgent">Open PAIAgent project page</a>
 
 Open PAIAgent is a high-speed, zero-bloat open-source personal AI agent built for absolute privacy and local execution. Designed as an ultra-lightweight alternative to resource-heavy frameworks, it drops complex abstractions like LangChain in favor of pure TypeScript performance, sub-second cold starts, and complete data sovereignty.
