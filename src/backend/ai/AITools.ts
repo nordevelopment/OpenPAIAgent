@@ -262,13 +262,13 @@ export class AITools {
         });
         break;
       case 'generate_pdf': {
-        const originalPath = args.path as string;
-        if (!originalPath.toLowerCase().endsWith('.pdf')) {
-          throw new Error(`The output path for generate_pdf must end with '.pdf' (received: '${originalPath}'). If you want to write a raw HTML/text file, use the 'write_file' tool instead.`);
+        let targetPath = args.path as string;
+        if (!targetPath.toLowerCase().endsWith('.pdf')) {
+          targetPath += '.pdf';
         }
-        const pdfPath = this.fsManager.validatePath(originalPath);
+        const pdfPath = this.fsManager.validatePath(targetPath);
         await browserService.generatePdf(args.html as string, pdfPath);
-        result = `PDF successfully generated and saved to ${args.path}`;
+        result = `PDF successfully generated and saved to ${targetPath}`;
         break;
       }
       case 'generate_excel': {
@@ -444,12 +444,12 @@ export class AITools {
         type: 'function',
         function: {
           name: 'generate_pdf',
-          description: 'Generates a binary PDF document from HTML content and saves it in the workspace. The output file path MUST end with `.pdf`. Do NOT use this tool if you only want to save/write an HTML file; use `write_file` for that.',
+          description: 'Generates a PDF document in the workspace from HTML content.',
           parameters: {
             type: 'object',
             properties: {
-              html: { type: 'string', description: 'The complete HTML document content to render (with CSS, margins, styles, etc.). Use clean layouts and inline/embedded CSS.' },
-              path: { type: 'string', description: 'The output file path relative to the workspace (e.g. workspace/report.pdf or report.pdf).' }
+              html: { type: 'string', description: 'HTML content to render with styling and CSS.' },
+              path: { type: 'string', description: 'Output PDF file path (e.g. report.pdf).' }
             },
             required: ['html', 'path']
           }
