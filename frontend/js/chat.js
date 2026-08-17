@@ -106,7 +106,6 @@ class AIAgentChat {
 
         this.initializeServices();
 
-        // Ждем загрузки истории и сессий
         await this.loadAgents();
         await this.getHistory();
         await this.getSessions();
@@ -228,7 +227,6 @@ class AIAgentChat {
             });
             const data = await response.json();
             if (data.success) {
-                // Если удалили текущую сессию, создаем новую
                 if (sessionId === this.sessionId) {
                     await this.createNewChat();
                 } else {
