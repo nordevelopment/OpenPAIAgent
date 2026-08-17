@@ -44,6 +44,62 @@ export class ChatManager {
    */
 
 
+  /**
+   * Safely parse tool arguments from AI model with auto-recovery for truncated/malformed JSON strings
+   */
+  private safeParseToolArguments(rawArgs: string, toolName?: string): Record<string, unknown> {
+    if (!rawArgs || typeof rawArgs !== 'string') return {};
+
+    try {
+      return JSON.parse(rawArgs);
+    } catch (primaryErr) {
+      logger.warn({ rawLength: rawArgs.length }, '[ChatManager] Standard JSON.parse failed on tool arguments. Attempting auto-recovery...');
+
+      // Attempt 1: Sanitize unescaped control characters
+      try {
+        const sanitized = rawArgs.replace(/[\x00-\x1F\x7F-\x9F]/g, (c) => {
+          if (c === '\n') return '\\n';
+          if (c === '\r') return '\\r';
+          if (c === '\t') return '\\t';
+          return '';
+        });
+        return JSON.parse(sanitized);
+      } catch {}
+
+      // Attempt 2: Auto-close truncated JSON string/object (e.g. hitting token limits)
+      try {
+        let repaired = rawArgs.trim();
+        if (!repaired.endsWith('}')) {
+          if (!repaired.endsWith('"')) {
+            repaired += '"';
+          }
+          repaired += '}';
+        }
+        return JSON.parse(repaired);
+      } catch {}
+
+      // Attempt 3: Regex extraction for write_file / read_file
+      if (toolName === 'write_file' || rawArgs.includes('"path"')) {
+        const pathMatch = rawArgs.match(/"path"\s*:\s*"([^"]+)"/);
+        const contentMatch = rawArgs.match(/"content"\s*:\s*"([\s\S]*)/);
+        if (pathMatch) {
+          let content = '';
+          if (contentMatch) {
+            content = contentMatch[1];
+            content = content.replace(/"\s*}?\s*$/, '');
+            content = content.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+          }
+          return {
+            path: pathMatch[1],
+            content
+          };
+        }
+      }
+
+      throw primaryErr;
+    }
+  }
+
   async sendMessage(
     userMessage: string,
     sessionId: string,
@@ -174,7 +230,7 @@ Title:`;
 
       for (const toolCall of aiResponse.toolCalls) {
         try {
-          const toolArgs = JSON.parse(toolCall.function.arguments);
+          const toolArgs = this.safeParseToolArguments(toolCall.function.arguments, toolCall.function.name);
 
           if (onProgress) {
             await onProgress('tool_start', {
