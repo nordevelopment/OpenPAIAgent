@@ -20,6 +20,7 @@ export class AgentService {
 
     /**
      * Get list of available agents (folder names in agents directory)
+     * Excludes system templates like base-template
      */
     async getAvailableAgents(): Promise<string[]> {
         if (!fs.existsSync(this.baseAgentsPath)) {
@@ -27,9 +28,10 @@ export class AgentService {
             return [];
         }
 
+        const SYSTEM_TEMPLATES = ['base-template', 'base_template'];
         const entries = fs.readdirSync(this.baseAgentsPath, { withFileTypes: true });
         return entries
-            .filter(entry => entry.isDirectory())
+            .filter(entry => entry.isDirectory() && !SYSTEM_TEMPLATES.includes(entry.name))
             .map(entry => entry.name);
     }
 
@@ -102,7 +104,7 @@ export class AgentService {
     }
 
     /**
-     * Create a new agent by copying files from main_agent
+     * Create a new agent by copying files from base-template (or main_agent as fallback)
      * @param agentId - agent ID (folder name)
      */
     async createAgent(agentId: string): Promise<void> {
@@ -119,11 +121,14 @@ export class AgentService {
         // Create directory
         fs.mkdirSync(newAgentPath, { recursive: true });
 
-        // Copy files from main_agent if it exists as template
+        // Determine template source: base-template preferred, fallback to main_agent
+        const baseTemplatePath = path.join(this.baseAgentsPath, 'base-template');
         const mainAgentPath = path.join(this.baseAgentsPath, 'main_agent');
-        if (fs.existsSync(mainAgentPath)) {
+        let templatePath = fs.existsSync(baseTemplatePath) ? baseTemplatePath : mainAgentPath;
+
+        if (fs.existsSync(templatePath)) {
             for (const filename of this.ALLOWED_EDIT_FILES) {
-                const srcFile = path.join(mainAgentPath, filename);
+                const srcFile = path.join(templatePath, filename);
                 const destFile = path.join(newAgentPath, filename);
                 if (fs.existsSync(srcFile)) {
                     fs.copyFileSync(srcFile, destFile);
@@ -133,7 +138,7 @@ export class AgentService {
             }
 
             // Copy skills directory if it exists
-            const srcSkillsDir = path.join(mainAgentPath, 'skills');
+            const srcSkillsDir = path.join(templatePath, 'skills');
             const destSkillsDir = path.join(newAgentPath, 'skills');
             if (fs.existsSync(srcSkillsDir)) {
                 fs.mkdirSync(destSkillsDir, { recursive: true });
@@ -159,8 +164,8 @@ export class AgentService {
      */
     async deleteAgent(agentId: string): Promise<void> {
         const safeAgentId = this.getSafeAgentId(agentId);
-        if (safeAgentId === 'main_agent') {
-            throw new Error('Cannot delete the default main_agent');
+        if (safeAgentId === 'main_agent' || safeAgentId === 'base-template' || safeAgentId === 'base_template') {
+            throw new Error('Cannot delete system agent or base template');
         }
 
         const agentPath = path.join(this.baseAgentsPath, safeAgentId);

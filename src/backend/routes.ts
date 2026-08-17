@@ -320,8 +320,8 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
   // Delete agent profile
   app.delete('/api/agents/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const agentId = request.params.id;
-    if (agentId === 'main_agent') {
-      return reply.status(400).send({ success: false, message: 'Cannot delete the default main_agent' });
+    if (agentId === 'main_agent' || agentId === 'base-template' || agentId === 'base_template') {
+      return reply.status(400).send({ success: false, message: 'Cannot delete system agent or base template' });
     }
 
     try {
