@@ -121,20 +121,6 @@ export class WebPageContent {
     }): Promise<string> {
         if (!url) return 'Error: URL is required';
 
-        // Auto-convert Google/DuckDuckGo search URLs to Bing Search HTML for unblocked, captcha-free search results
-        if (url.includes('google.com/search') || url.includes('google.ru/search') || url.includes('duckduckgo.com')) {
-            try {
-                const parsedUrl = new URL(url);
-                const query = parsedUrl.searchParams.get('q');
-                if (query) {
-                    logger.info({ originalUrl: url }, 'WebPageContent: Automatically routing search URL to Bing Search for unblocked results');
-                    url = `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
-                }
-            } catch {
-                // Ignore URL parse error
-            }
-        }
-
         // SSRF protection: validate URL scheme and resolved IP address
         const validation = await validateAndResolveUrl(url);
         if (!validation.valid) {

@@ -428,7 +428,7 @@ export class AITools {
         type: 'function',
         function: {
           name: 'fetch_web_page',
-          description: 'Gets web page content or performs web searches. To search the web for information, pass a search URL like https://www.bing.com/search?q=YOUR_QUERY. Uses headless browser (Puppeteer) or static fetch to render pages.',
+          description: 'Gets web page content by direct URL. Uses headless browser (Puppeteer) or static HTTP fetch to render pages, execute scripts and extract clean markdown content.',
           parameters: {
             type: 'object',
             properties: {
