@@ -123,13 +123,21 @@
 
         /* Custom Cyber Cards for Messages */
         .message-box {
-            padding: 15px 20px;
+            padding: 8px 16px;
             border-radius: 2px;
             position: relative;
             border: 1px solid var(--cyber-border);
             clip-path: polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%);
             max-width: 100%;
             overflow: auto;
+        }
+
+        .message-box ul,
+        .message-box ol,
+        .message-box li {
+            padding-left: 15px;
+            margin: 0;
+            list-style-position: outside;
         }
 
         .message.agent .message-box {
