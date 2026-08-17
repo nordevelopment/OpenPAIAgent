@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, LogController } from 'fastify';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
@@ -57,7 +57,9 @@ export async function buildApp(): Promise<FastifyInstance> {
         },
       } : undefined,
     },
-    disableRequestLogging: true,
+    logController: new LogController({
+      disableRequestLogging: true,
+    }),
     bodyLimit: 20971520, // 20MB
   });
 
