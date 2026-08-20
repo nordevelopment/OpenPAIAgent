@@ -5,12 +5,13 @@
  */
 
 import fsSync from 'fs';
+import path from 'path';
 import { FileSystemManager } from "../services/FileSystemManager.js";
 import { WebPageContent } from "../services/WebPageContent.js";
 import { imageService } from "../services/imageService.js";
 import { MemoryManager } from "./MemoryManager.js";
 import { browserService } from "../services/BrowserService.js";
-import { OfficeDocumentService, ExcelSheetData, DocxDocumentData } from "../services/OfficeDocumentService.js";
+import { OfficeDocumentService, ExcelSheetData, DocxDocumentData, ExcelEditOperation } from "../services/OfficeDocumentService.js";
 
 export interface ToolCall {
   name: string;
@@ -233,13 +234,69 @@ export class AITools {
     let result: any;
 
     switch (name) {
-      case 'read_file':
-        result = await this.fsManager.readFile(p, { encoding: args.encoding as BufferEncoding });
+      case 'read_file': {
+        const ext = path.extname(p).toLowerCase();
+        const validP = this.fsManager.validatePath(p);
+        if (ext === '.pdf') {
+          result = await this.officeService.readPdf(validP, { maxPages: args.maxPages as number | undefined });
+        } else if (ext === '.docx' || ext === '.doc') {
+          result = await this.officeService.readDocx(validP);
+        } else if (ext === '.xlsx' || ext === '.xls') {
+          result = await this.officeService.readExcel(validP, {
+            sheetName: args.sheetName as string | undefined,
+            limitRows: args.limitRows as number | undefined
+          });
+        } else {
+          result = await this.fsManager.readFile(p, { encoding: args.encoding as BufferEncoding });
+        }
         break;
-      case 'write_file':
-        await this.fsManager.writeFile(p, args.content as string);
-        result = "File written successfully.";
+      }
+      case 'read_excel': {
+        const validP = this.fsManager.validatePath(p);
+        result = await this.officeService.readExcel(validP, {
+          sheetName: args.sheetName as string | undefined,
+          limitRows: args.limitRows as number | undefined
+        });
         break;
+      }
+      case 'edit_excel': {
+        const validP = this.fsManager.validatePath(p);
+        await this.officeService.editExcel(validP, args.operations as ExcelEditOperation[]);
+        result = `Excel spreadsheet ${p} updated successfully.`;
+        break;
+      }
+      case 'read_docx': {
+        const validP = this.fsManager.validatePath(p);
+        result = await this.officeService.readDocx(validP);
+        break;
+      }
+      case 'read_pdf': {
+        const validP = this.fsManager.validatePath(p);
+        result = await this.officeService.readPdf(validP, { maxPages: args.maxPages as number | undefined });
+        break;
+      }
+      case 'write_file': {
+        const ext = path.extname(p).toLowerCase();
+        const validP = this.fsManager.validatePath(p);
+
+        if (ext === '.pdf') {
+          const htmlContent = (args.html as string) || (args.content as string) || '';
+          await browserService.generatePdf(htmlContent, validP);
+          result = `PDF successfully generated and saved to ${p}`;
+        } else if (ext === '.docx' || ext === '.doc') {
+          const content = (args.content as string) || (args.markdown as string) || (args.document as DocxDocumentData) || '';
+          await this.officeService.createDocx(validP, content);
+          result = `Word document successfully generated and saved to ${p}`;
+        } else if (ext === '.xlsx' || ext === '.xls') {
+          const sheets = (args.sheets as ExcelSheetData[]) || [];
+          await this.officeService.createExcel(validP, sheets);
+          result = `Excel spreadsheet successfully generated and saved to ${p}`;
+        } else {
+          await this.fsManager.writeFile(p, args.content as string);
+          result = "File written successfully.";
+        }
+        break;
+      }
       case 'list_directory':
         result = await this.fsManager.listDirectory(p);
         break;
@@ -341,11 +398,14 @@ export class AITools {
         type: 'function',
         function: {
           name: 'read_file',
-          description: 'Reads the contents of a text file. All paths must be within workspace/ (e.g., project/file.txt).',
+          description: 'Reads the contents of a file. Automatically extracts clean text/markdown and structured data from text files (.txt, .md, .csv, .json, code), PDF documents (.pdf), Word documents (.docx), and Excel spreadsheets (.xlsx, .xls). All paths must be within workspace/ (e.g., session_xxx/report.pdf).',
           parameters: {
             type: 'object',
             properties: {
               path: { type: 'string', description: 'The path to the file relative to the workspace or the absolute path within the workspace' },
+              sheetName: { type: 'string', description: 'Optional: Specific sheet name to read for Excel files (.xlsx)' },
+              limitRows: { type: 'integer', description: 'Optional: Max rows to read per sheet for Excel files (default: 100)' },
+              maxPages: { type: 'integer', description: 'Optional: Max pages to read for PDF files (default: all)' },
               encoding: { type: 'string', enum: ['utf8', 'base64'], default: 'utf8' }
             },
             required: ['path']
@@ -356,14 +416,19 @@ export class AITools {
         type: 'function',
         function: {
           name: 'write_file',
-          description: "Creates or overwrites a file. SECURITY POLICY: If the target file already exists on disk, you MUST call 'read_file' first in the current session to inspect its contents before overwriting it. All paths must be within workspace/ (e.g., project/file.txt).",
+          description: "Creates or overwrites any file or document in the workspace. Automatically generates Word documents (.docx) from Markdown, PDF documents (.pdf) from styled HTML, Excel spreadsheets (.xlsx) from sheets data, or standard text/code files (.txt, .md, .py, .json, .csv). SECURITY POLICY: If the target file already exists on disk, you MUST call 'read_file' first in the current session to inspect its contents before overwriting it. All paths must be within workspace/ (e.g., session_xxx/report.docx, session_xxx/invoice.pdf, session_xxx/budget.xlsx, session_xxx/app.ts).",
           parameters: {
             type: 'object',
             properties: {
-              path: { type: 'string', description: 'The path to the file relative to the workspace or the absolute path within the workspace' },
-              content: { type: 'string', description: 'The text content of the file' }
+              path: { type: 'string', description: 'Output path relative to workspace (e.g. session_xxx/report.docx, session_xxx/invoice.pdf, session_xxx/budget.xlsx, session_xxx/app.ts)' },
+              content: { type: 'string', description: 'Content to write: Text/code for regular files; Markdown for Word documents (.docx); styled HTML for PDF documents (.pdf)' },
+              sheets: {
+                type: 'array',
+                description: 'For Excel files (.xlsx): Array of sheets [{ name: "Sheet1", columns: [{ header: "Name", key: "name" }], rows: [{ name: "Alice" }] }]',
+                items: { type: 'object' }
+              }
             },
-            required: ['path', 'content']
+            required: ['path']
           }
         }
       },
@@ -443,54 +508,6 @@ export class AITools {
       {
         type: 'function',
         function: {
-          name: 'generate_pdf',
-          description: 'Generates a PDF document in the workspace from HTML content.',
-          parameters: {
-            type: 'object',
-            properties: {
-              html: { type: 'string', description: 'HTML content to render with styling and CSS.' },
-              path: { type: 'string', description: 'Output PDF file path (e.g. report.pdf).' }
-            },
-            required: ['html', 'path']
-          }
-        }
-      },
-      {
-        type: 'function',
-        function: {
-          name: 'generate_image',
-          description: 'Generates an image from a text prompt using AI. Returns the relative path. IMPORTANT: You MUST display the generated image in your response using markdown syntax: ![Caption](relative_path).',
-          parameters: {
-            type: 'object',
-            properties: {
-              prompt: { type: 'string', description: 'The detailed description of the image to generate.' },
-              aspectRatio: {
-                type: 'string',
-                enum: ['1:1', '16:9', '9:16', '4:3', '3:4', '3:2', '2:3'],
-                default: '2:3',
-                description: 'The aspect ratio of the generated image.'
-              },
-              steps: {
-                type: 'integer',
-                minimum: 1,
-                maximum: 30,
-                default: 25,
-                description: 'The number of steps (quality/time trade-off).'
-              },
-              provider: {
-                type: 'string',
-                enum: ['together', 'xai'],
-                default: 'together',
-                description: 'The image generation provider.'
-              }
-            },
-            required: ['prompt']
-          }
-        }
-      },
-      {
-        type: 'function',
-        function: {
           name: 'save_memory',
           description: 'Saves or updates an important fact about the user, preference, or context in long-term memory.',
           parameters: {
@@ -541,34 +558,52 @@ export class AITools {
       {
         type: 'function',
         function: {
-          name: 'generate_excel',
-          description: 'Generates a formatted Excel spreadsheet (.xlsx) in the workspace.',
+          name: 'generate_image',
+          description: 'Generates an image from a text prompt using AI. Returns the relative path. IMPORTANT: You MUST display the generated image in your response using markdown syntax: ![Caption](relative_path).',
           parameters: {
             type: 'object',
             properties: {
-              path: { type: 'string', description: 'Output path relative to workspace (e.g. sales_report.xlsx).' },
-              sheets: {
-                type: 'array',
-                description: 'Array of sheets [{ name: "Sheet1", columns: [{ header: "Name", key: "name" }], rows: [{ name: "Alice" }] }]',
-                items: { type: 'object' }
+              prompt: { type: 'string', description: 'The detailed description of the image to generate.' },
+              aspectRatio: {
+                type: 'string',
+                enum: ['1:1', '16:9', '9:16', '4:3', '3:4', '3:2', '2:3'],
+                default: '2:3',
+                description: 'The aspect ratio of the generated image.'
+              },
+              steps: {
+                type: 'integer',
+                minimum: 1,
+                maximum: 30,
+                default: 25,
+                description: 'The number of steps (quality/time trade-off).'
+              },
+              provider: {
+                type: 'string',
+                enum: ['together', 'xai'],
+                default: 'together',
+                description: 'The image generation provider.'
               }
             },
-            required: ['path', 'sheets']
+            required: ['prompt']
           }
         }
       },
       {
         type: 'function',
         function: {
-          name: 'generate_docx',
-          description: 'Generates a Word document (.docx) in the workspace from Markdown content (supports # titles, ## headers, tables, bold, lists).',
+          name: 'edit_excel',
+          description: 'Updates an existing Excel spreadsheet (.xlsx) in the workspace by updating specific cells, adding rows, or adding sheets.',
           parameters: {
             type: 'object',
             properties: {
-              content: { type: 'string', description: 'Document content in Markdown format.' },
-              path: { type: 'string', description: 'Output file path relative to workspace (e.g. report.docx).' }
+              path: { type: 'string', description: 'Path to Excel file in workspace (e.g. session_xxx/data.xlsx)' },
+              operations: {
+                type: 'array',
+                description: 'List of update operations: [{ sheetName: "Sheet1", cellUpdates: [{ cell: "B2", value: 150 }], appendRows: [["New item", 200]] }]',
+                items: { type: 'object' }
+              }
             },
-            required: ['content', 'path']
+            required: ['path', 'operations']
           }
         }
       }

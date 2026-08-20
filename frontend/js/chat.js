@@ -26,10 +26,14 @@ class AIAgentChat {
         this.hasAiApiKey = true;
 
         this.inputImageFile = document.getElementById('input-image-file');
+        this.inputDocFile = document.getElementById('input-doc-file');
         this.imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        this.attachmentsPreviewContainer = document.getElementById('attachmentsPreviewContainer');
+        this.dropZoneOverlay = document.getElementById('dropZoneOverlay');
         this.imagePreview = document.getElementById('imagePreview');
         this.btnRemoveImage = document.getElementById('btnRemoveImage');
         this.selectedImageBase64 = null;
+        this.selectedFiles = [];
 
         this.init();
     }
@@ -78,9 +82,14 @@ class AIAgentChat {
         if (this.inputImageFile) {
             this.inputImageFile.addEventListener('change', (e) => this.handleImageSelect(e));
         }
+        if (this.inputDocFile) {
+            this.inputDocFile.addEventListener('change', (e) => this.handleDocSelect(e));
+        }
         if (this.btnRemoveImage) {
             this.btnRemoveImage.addEventListener('click', () => this.removeSelectedImage());
         }
+
+        this.setupDragAndDrop();
 
         // Auto-resize textarea
         this.messageInput.addEventListener('input', () => {
@@ -306,6 +315,128 @@ class AIAgentChat {
         }
     }
 
+    getFileIcon(filename) {
+        if (!filename) return '📎';
+        const ext = filename.split('.').pop().toLowerCase();
+        if (['pdf'].includes(ext)) return '📕';
+        if (['xlsx', 'xls', 'csv'].includes(ext)) return '📊';
+        if (['docx', 'doc'].includes(ext)) return '📝';
+        if (['txt', 'md', 'json', 'log', 'js', 'ts', 'py', 'html', 'css', 'yaml', 'yml', 'xml', 'sql', 'sh', 'bat'].includes(ext)) return '📄';
+        if (['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].includes(ext)) return '🖼️';
+        return '📎';
+    }
+
+    handleDocSelect(e) {
+        if (!e.target.files || e.target.files.length === 0) return;
+        this.addSelectedFiles(Array.from(e.target.files));
+        e.target.value = '';
+    }
+
+    addSelectedFiles(files) {
+        if (!files || files.length === 0) return;
+        for (const file of files) {
+            const alreadyExists = this.selectedFiles.some(f => f.name === file.name && f.size === file.size);
+            if (!alreadyExists) {
+                this.selectedFiles.push({
+                    file: file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                });
+            }
+        }
+        this.renderAttachmentChips();
+    }
+
+    renderAttachmentChips() {
+        if (!this.attachmentsPreviewContainer) return;
+        this.attachmentsPreviewContainer.innerHTML = '';
+
+        if (this.selectedFiles.length === 0) {
+            this.attachmentsPreviewContainer.classList.remove('active');
+            return;
+        }
+
+        this.attachmentsPreviewContainer.classList.add('active');
+
+        this.selectedFiles.forEach((item, index) => {
+            const chip = document.createElement('div');
+            chip.className = 'attachment-chip';
+
+            const icon = this.getFileIcon(item.name);
+            const sizeKb = Math.max(1, Math.round(item.size / 1024));
+            const sizeFormatted = sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`;
+
+            chip.innerHTML = `
+                <span class="attachment-chip__icon">${icon}</span>
+                <div class="attachment-chip__info">
+                    <span class="attachment-chip__name" title="${item.name}">${item.name}</span>
+                    <span class="attachment-chip__size">${sizeFormatted}</span>
+                </div>
+                <button class="attachment-chip__remove" title="Remove file" type="button">×</button>
+            `;
+
+            chip.querySelector('.attachment-chip__remove').addEventListener('click', () => {
+                this.removeSelectedFile(index);
+            });
+
+            this.attachmentsPreviewContainer.appendChild(chip);
+        });
+    }
+
+    removeSelectedFile(index) {
+        if (index >= 0 && index < this.selectedFiles.length) {
+            this.selectedFiles.splice(index, 1);
+            this.renderAttachmentChips();
+        }
+    }
+
+    clearSelectedFiles() {
+        this.selectedFiles = [];
+        this.renderAttachmentChips();
+        if (this.inputDocFile) {
+            this.inputDocFile.value = '';
+        }
+    }
+
+    setupDragAndDrop() {
+        if (!this.chatViewContainer) return;
+
+        let dragCounter = 0;
+
+        window.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            dragCounter++;
+            if (this.dropZoneOverlay && this.chatViewContainer && this.chatViewContainer.style.display !== 'none') {
+                this.dropZoneOverlay.style.display = 'flex';
+            }
+        });
+
+        window.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        window.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dragCounter--;
+            if (dragCounter <= 0 && this.dropZoneOverlay) {
+                this.dropZoneOverlay.style.display = 'none';
+                dragCounter = 0;
+            }
+        });
+
+        window.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragCounter = 0;
+            if (this.dropZoneOverlay) {
+                this.dropZoneOverlay.style.display = 'none';
+            }
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                this.addSelectedFiles(Array.from(e.dataTransfer.files));
+            }
+        });
+    }
+
     handleImageSelect(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -332,32 +463,61 @@ class AIAgentChat {
         if (this.isLoading) return;
         const message = this.messageInput.value.trim();
         const image = this.selectedImageBase64;
-        if (!message && !image) return;
+        const filesToUpload = [...this.selectedFiles];
+
+        if (!message && !image && filesToUpload.length === 0) return;
 
         if (!this.hasAiApiKey) {
             this.addMessage('⚠️ **AI API Key is missing.** Please open [Settings](/settings) to configure your AI API Key to enable LLM chat functions.', 'agent');
             return;
         }
 
-        console.log('Sending message:', { message, hasImage: !!image, sessionId: this.sessionId });
+        console.log('Sending message:', { message, hasImage: !!image, filesCount: filesToUpload.length, sessionId: this.sessionId });
 
         this.isLoading = true;
         this.sendButton.disabled = true;
         this.messageInput.disabled = true;
 
+        this.messageInput.value = '';
+        this.messageInput.style.height = 'auto';
+        this.removeSelectedImage();
+        this.clearSelectedFiles();
+        this.showTyping();
+
+        // Upload attached files to workspace
+        const uploadedFiles = [];
+        if (filesToUpload.length > 0) {
+            for (const item of filesToUpload) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', item.file);
+                    if (this.sessionId) {
+                        formData.append('sessionId', this.sessionId);
+                    }
+                    const uploadRes = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (uploadRes.ok) {
+                        const uploadJson = await uploadRes.json();
+                        if (uploadJson.success && uploadJson.file) {
+                            uploadedFiles.push(uploadJson.file);
+                        }
+                    }
+                } catch (upErr) {
+                    console.error('File upload error:', upErr);
+                }
+            }
+        }
+
         if (image) {
             this.addMessage([
                 { type: 'text', text: message },
                 { type: 'image_url', image_url: { url: image } }
-            ], 'user');
+            ], 'user', null, uploadedFiles);
         } else {
-            this.addMessage(message, 'user');
+            this.addMessage(message, 'user', null, uploadedFiles);
         }
-
-        this.messageInput.value = '';
-        this.messageInput.style.height = 'auto';
-        this.removeSelectedImage();
-        this.showTyping();
 
         try {
             const response = await fetch('/api/chat', {
@@ -368,7 +528,8 @@ class AIAgentChat {
                 body: JSON.stringify({
                     message: message,
                     sessionId: this.sessionId,
-                    image: image
+                    image: image,
+                    files: uploadedFiles
                 }),
             });
 
@@ -599,22 +760,19 @@ class AIAgentChat {
         messageDiv.style.alignSelf = 'flex-start';
         messageDiv.style.maxWidth = '90%';
 
-        const bgColor = isDone ? 'rgba(0, 255, 136, 0.04)' : 'rgba(0, 255, 255, 0.04)';
-        const borderColor = isDone ? 'var(--cyber-primary)' : 'var(--cyber-secondary)';
-
         if (subtitle || content) {
             messageDiv.innerHTML = `
-                <details style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor}; width: 100%;">
-                    <summary style="font-weight: bold; cursor: pointer; outline: none; user-select: none;">${icon} [SYSTEM] ${title}</summary>
-                    <div style="margin-top: 8px; border-top: 1px dashed ${borderColor}; padding-top: 8px;">
+                <details class="system-message">
+                    <summary>${icon} [SYSTEM] ${title}</summary>
+                    <div>
                         ${subtitle ? `<div style="opacity: 0.8; font-size: 11px; margin-bottom: 4px;">${subtitle}</div>` : ''}
-                        ${content ? `<pre style="margin: 5px 0 0 0; white-space: pre-wrap; font-size: 11px; opacity: 0.7; overflow-x: auto; max-height: 250px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 2px;">${content}</pre>` : ''}
+                        ${content ? `<pre>${content}</pre>` : ''}
                     </div>
                 </details>
             `;
         } else {
             messageDiv.innerHTML = `
-                <div style="background: ${bgColor}; border: 1px dashed ${borderColor}; padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: ${borderColor}; box-shadow: 0 0 5px ${bgColor}; width: 100%; font-weight: bold;">
+                <div class="system-message">
                     ${icon} [SYSTEM] ${title}
                 </div>
             `;
@@ -624,7 +782,7 @@ class AIAgentChat {
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
     }
 
-    addMessage(content, type, reasoning = null) {
+    addMessage(content, type, reasoning = null, attachedFiles = null) {
         this.removeWelcomeState();
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
@@ -639,6 +797,18 @@ class AIAgentChat {
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         };
+
+        let attachmentsHtml = '';
+        if (attachedFiles && Array.isArray(attachedFiles) && attachedFiles.length > 0) {
+            attachmentsHtml = `<div class="chat-message-attachments">` +
+                attachedFiles.map(f => {
+                    const icon = this.getFileIcon(f.name);
+                    const sizeKb = Math.max(1, Math.round((f.size || 0) / 1024));
+                    const sizeFormatted = sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`;
+                    return `<span class="message-attachment-badge" title="${f.path || f.name}">${icon} <strong>${escapeHtml(f.name)}</strong> (${sizeFormatted})</span>`;
+                }).join('') +
+            `</div>`;
+        }
 
         if (Array.isArray(content)) {
             let text = '';
@@ -656,7 +826,7 @@ class AIAgentChat {
             if (content.startsWith('[')) {
                 try {
                     const parsed = JSON.parse(content);
-                    this.addMessage(parsed, type, reasoning);
+                    this.addMessage(parsed, type, reasoning, attachedFiles);
                     return;
                 } catch (e) {
                     // fallback
@@ -695,6 +865,7 @@ class AIAgentChat {
         messageDiv.innerHTML = `
             <div class="message-box">
                 <div class="message-content">
+                    ${attachmentsHtml}
                     ${displayContent}
                     ${reasoningHtml}
                 </div>

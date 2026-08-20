@@ -104,15 +104,24 @@ export class ChatManager {
     userMessage: string,
     sessionId: string,
     imageBase64?: string,
-    onProgress?: (event: 'tool_start' | 'tool_done' | 'skills_loaded', data: any) => void | Promise<void>
+    onProgress?: (event: 'tool_start' | 'tool_done' | 'skills_loaded', data: any) => void | Promise<void>,
+    files?: { name: string; path: string; size: number; type?: string }[]
   ): Promise<{ content: string; reasoning?: string }> {
-    let finalContent: any = userMessage;
+    let textPrompt = userMessage || '';
+
+    if (files && files.length > 0) {
+      const filesDesc = files.map(f => `- 📎 **${f.name}** (Path: \`workspace/${f.path}\`, Size: ${Math.max(1, Math.round(f.size / 1024))} KB)`).join('\n');
+      const attachmentContext = `\n\n[USER ATTACHED WORKSPACE FILES]:\n${filesDesc}\n(You can inspect, read, analyze, or edit these files using your tools: 'read_file', 'read_docx', 'read_excel', 'read_pdf', 'edit_excel', etc.)`;
+      textPrompt = textPrompt ? `${textPrompt}\n${attachmentContext}` : `Please inspect and analyze the attached files:\n${attachmentContext}`;
+    }
+
+    let finalContent: any = textPrompt;
 
     if (imageBase64) {
       try {
         const processed = await this.aiClient.processImage({ base64: imageBase64, url: '' });
         finalContent = [
-          { type: 'text', text: userMessage || 'What is this image? Describe it in details.' },
+          { type: 'text', text: textPrompt || 'What is this image? Describe it in details.' },
           { type: 'image_url', image_url: { url: processed.filePath } }
         ];
       } catch (err) {

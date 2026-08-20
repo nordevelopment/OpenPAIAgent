@@ -22,6 +22,13 @@ import { exec } from 'child_process';
 
 
 
+export interface UploadedFileInfo {
+  name: string;
+  path: string;
+  size: number;
+  type?: string;
+}
+
 /**
  * Types for chat request body
  */
@@ -29,6 +36,7 @@ interface ChatRequestBody {
   message: string;
   sessionId?: string;
   image?: string;
+  files?: UploadedFileInfo[];
 }
 
 interface ClearHistoryRequestBody {
@@ -335,11 +343,56 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
     }
   });
 
+  // File upload route (supports txt, pdf, excel, word, images, etc.)
+  app.post('/api/upload', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const data = await request.file();
+      if (!data) {
+        return reply.status(400).send({ success: false, message: 'No file provided' });
+      }
+
+      const requestedSessionId = request.sessionId || (data.fields?.sessionId as any)?.value || 'session_global';
+      const sessionFolderName = requestedSessionId.startsWith('session_') || requestedSessionId.startsWith('telegram_')
+        ? requestedSessionId
+        : `session_${requestedSessionId}`;
+
+      const sessionDir = path.join(process.cwd(), 'workspace', sessionFolderName);
+      if (!fs.existsSync(sessionDir)) {
+        fs.mkdirSync(sessionDir, { recursive: true });
+      }
+
+      // Preserve clean original filename
+      const originalName = data.filename || 'uploaded_document';
+      const cleanName = path.basename(originalName).replace(/[^\w\d_.\-\s\u0400-\u04FF]/g, '_');
+      const targetFilePath = path.join(sessionDir, cleanName);
+
+      const buffer = await data.toBuffer();
+      fs.writeFileSync(targetFilePath, buffer);
+
+      const relativeWorkspacePath = `${sessionFolderName}/${cleanName}`;
+      const stats = fs.statSync(targetFilePath);
+
+      return reply.send({
+        success: true,
+        file: {
+          name: originalName,
+          savedName: cleanName,
+          path: relativeWorkspacePath,
+          size: stats.size,
+          mimetype: data.mimetype
+        }
+      });
+    } catch (err: any) {
+      request.log.error({ err }, 'File upload failed');
+      return reply.status(500).send({ success: false, message: err?.message || 'File upload failed' });
+    }
+  });
+
   // Chat with agent (Streaming via Server-Sent Events)
   app.post('/api/chat', async (request: FastifyRequest<{ Body: ChatRequestBody }>, reply: FastifyReply) => {
-    const { message, image } = request.body;
+    const { message, image, files } = request.body;
     const sessionId = request.sessionId;
-    //request.log.info({ message, sessionId, hasImage: !!image }, 'Chat request (stream)');
+    //request.log.info({ message, sessionId, hasImage: !!image, filesCount: files?.length || 0 }, 'Chat request (stream)');
 
     reply.raw.writeHead(200, {
       'Content-Type': 'text/event-stream',
@@ -355,7 +408,7 @@ export async function registerRoutes(app: FastifyInstance, chatManager: ChatMana
     try {
       const response = await chatManager.sendMessage(message, sessionId, image, (event, data) => {
         sendEvent(event, data);
-      });
+      }, files);
       sendEvent('final', {
         message: response.content,
         reasoning: response.reasoning

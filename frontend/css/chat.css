@@ -481,51 +481,173 @@
             }
         }
 
-        /* Image Preview in Input Area */
-        .image-preview-container {
+        /* Attachments Preview in Input Area */
+        .attachments-preview-container {
             display: none;
-            position: relative;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-bottom: 10px;
+            max-height: 140px;
+            overflow-y: auto;
             padding: 4px;
-            border: 1px dashed var(--cyber-border);
-            background: rgba(0, 0, 0, 0.4);
-            max-width: 120px;
-            border-radius: 2px;
         }
 
-        .image-preview-container.active {
-            display: block;
+        .attachments-preview-container.active {
+            display: flex;
         }
 
-        .image-preview-container img {
-            max-width: 100%;
-            max-height: 100px;
-            display: block;
+        .attachment-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(13, 27, 42, 0.85);
             border: 1px solid var(--cyber-border);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--cyber-primary);
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.1);
+            position: relative;
+            animation: fadeIn 0.2s ease-in-out;
+            max-width: 260px;
         }
 
-        .image-preview-container .btn-remove {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--cyber-secondary);
-            color: #fff;
-            border: 1px solid var(--cyber-border);
-            width: 20px;
-            height: 20px;
+        .attachment-chip__icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .attachment-chip__info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .attachment-chip__name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+        }
+
+        .attachment-chip__size {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        .attachment-chip__remove {
+            background: transparent;
+            border: none;
+            color: var(--cyber-secondary);
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            padding: 0 2px;
+            line-height: 1;
+            transition: all 0.2s ease;
+            margin-left: 4px;
+        }
+
+        .attachment-chip__remove:hover {
+            color: #ff0055;
+            text-shadow: 0 0 5px #ff0055;
+            transform: scale(1.2);
+        }
+
+        /* Attached files inside chat message bubbles */
+        .chat-message-attachments {
             display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .message-attachment-badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            box-shadow: 0 0 5px var(--cyber-secondary);
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--cyber-border);
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--cyber-primary);
+            text-decoration: none;
             transition: all 0.2s ease;
         }
 
-        .image-preview-container .btn-remove:hover {
-            background: #ff0055;
-            box-shadow: 0 0 10px #ff0055;
+        .message-attachment-badge:hover {
+            border-color: var(--cyber-primary);
+            box-shadow: 0 0 8px var(--cyber-primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        /* Drag & Drop Full Overlay */
+        .drop-zone-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 15, 20, 0.88);
+            border: 2px dashed var(--cyber-primary);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        .drop-zone-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .drop-zone-icon {
+            font-size: 48px;
+            animation: bounce 1s infinite alternate ease-in-out;
+        }
+
+        .drop-zone-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: var(--cyber-primary);
+        }
+
+        .drop-zone-desc {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--cyber-lime-500);
+            opacity: 0.85;
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulseGlow {
+            from {
+                box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.2);
+            }
+
+            to {
+                box-shadow: inset 0 0 40px rgba(0, 255, 136, 0.5);
+            }
         }
 
         /* Chat Message Image */
@@ -649,7 +771,7 @@
         }
 
         [data-theme="light"] .sidebar {
-            background-color: #fdfdfd;
+            background-color: #e7d2a612;
             border-right: 1px solid #e2e8f0;
         }
 
@@ -1110,4 +1232,11 @@
 
         [data-theme="light"] .welcome-card .card-title {
             color: #0369a1;
+        }
+
+
+        .system-message {
+            border: 1px solid #ccc;
+            padding: 4px 7px;
+            border-radius: 4px;
         }

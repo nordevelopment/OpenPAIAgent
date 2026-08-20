@@ -12,6 +12,11 @@ import {
   WidthType
 } from 'docx';
 import fs from 'fs/promises';
+import mammoth from 'mammoth';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { PDFParse } = require('pdf-parse');
 
 // Excel Interfaces
 export interface ExcelColumn {
@@ -24,6 +29,17 @@ export interface ExcelSheetData {
   name: string;
   columns?: ExcelColumn[];
   rows: Record<string, any>[] | any[][];
+}
+
+export interface ExcelCellUpdate {
+  cell: string; // e.g. 'A1', 'B5'
+  value: any;
+}
+
+export interface ExcelEditOperation {
+  sheetName?: string;
+  cellUpdates?: ExcelCellUpdate[];
+  appendRows?: (Record<string, any> | any[])[];
 }
 
 // DOCX Interfaces
@@ -333,5 +349,172 @@ export class OfficeDocumentService {
 
     const buffer = await Packer.toBuffer(doc);
     await fs.writeFile(outputPath, buffer);
+  }
+
+  /**
+   * Helper to format cell value from ExcelJS
+   */
+  private formatCellValue(val: any): string {
+    if (val === null || val === undefined) return '';
+    if (typeof val === 'object') {
+      if (val instanceof Date) return val.toISOString().split('T')[0];
+      if ('result' in val) return String(val.result ?? '');
+      if ('text' in val) return String(val.text ?? '');
+      if ('richText' in val && Array.isArray(val.richText)) {
+        return val.richText.map((r: any) => r.text || '').join('');
+      }
+      return JSON.stringify(val);
+    }
+    return String(val);
+  }
+
+  /**
+   * Read Excel (.xlsx, .xls) spreadsheet content and format as Markdown tables
+   */
+  async readExcel(filePath: string, options?: { sheetName?: string; limitRows?: number }): Promise<string> {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
+
+    const maxRows = options?.limitRows || 100;
+    const sheetsToRead = options?.sheetName 
+      ? workbook.worksheets.filter(s => s.name.toLowerCase() === options.sheetName!.toLowerCase())
+      : workbook.worksheets;
+
+    if (sheetsToRead.length === 0) {
+      return `[EXCEL INFO: No matching sheet found in workbook. Available sheets: ${workbook.worksheets.map(s => s.name).join(', ')}]`;
+    }
+
+    const output: string[] = [];
+
+    for (const sheet of sheetsToRead) {
+      output.push(`### Sheet: ${sheet.name}`);
+
+      const rawRows: string[][] = [];
+      let maxCols = 0;
+
+      sheet.eachRow({ includeEmpty: false }, (row, _rowNumber) => {
+        if (rawRows.length >= maxRows) return;
+        const rowVals: string[] = [];
+        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          while (rowVals.length < colNumber - 1) {
+            rowVals.push('');
+          }
+          const formatted = this.formatCellValue(cell.value).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+          rowVals.push(formatted);
+        });
+        if (rowVals.length > maxCols) {
+          maxCols = rowVals.length;
+        }
+        rawRows.push(rowVals);
+      });
+
+      if (rawRows.length === 0) {
+        output.push('_Sheet is empty_\n');
+        continue;
+      }
+
+      // Pad all rows to maxCols
+      for (const row of rawRows) {
+        while (row.length < maxCols) {
+          row.push('');
+        }
+      }
+
+      // Format markdown table
+      const headerRow = rawRows[0];
+      const separatorRow = new Array(maxCols).fill('---');
+      const bodyRows = rawRows.slice(1);
+
+      output.push(`| ${headerRow.join(' | ')} |`);
+      output.push(`| ${separatorRow.join(' | ')} |`);
+
+      for (const bRow of bodyRows) {
+        output.push(`| ${bRow.join(' | ')} |`);
+      }
+
+      if (sheet.rowCount > maxRows) {
+        output.push(`\n_[TRUNCATED: Showing first ${maxRows} of ${sheet.rowCount} rows]_`);
+      }
+
+      output.push('');
+    }
+
+    return output.join('\n').trim();
+  }
+
+  /**
+   * Edit or update an existing Excel spreadsheet
+   */
+  async editExcel(filePath: string, operations: ExcelEditOperation[]): Promise<void> {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
+
+    for (const op of operations) {
+      let sheet = op.sheetName ? workbook.getWorksheet(op.sheetName) : workbook.worksheets[0];
+      if (!sheet) {
+        sheet = workbook.addWorksheet(op.sheetName || 'Sheet1');
+      }
+
+      if (op.cellUpdates && Array.isArray(op.cellUpdates)) {
+        for (const update of op.cellUpdates) {
+          sheet.getCell(update.cell).value = update.value;
+        }
+      }
+
+      if (op.appendRows && Array.isArray(op.appendRows)) {
+        sheet.addRows(op.appendRows);
+      }
+    }
+
+    await workbook.xlsx.writeFile(filePath);
+  }
+
+  /**
+   * Read Word (.docx) document content and format as Markdown
+   */
+  async readDocx(filePath: string): Promise<string> {
+    const buffer = await fs.readFile(filePath);
+    try {
+      if (typeof (mammoth as any).convertToMarkdown === 'function') {
+        const result = await (mammoth as any).convertToMarkdown({ buffer });
+        if (result.value && result.value.trim().length > 0) {
+          return result.value.trim();
+        }
+      }
+    } catch {
+      // Fallback
+    }
+
+    const raw = await mammoth.extractRawText({ buffer });
+    return raw.value.trim() || 'Empty Document';
+  }
+
+  /**
+   * Read PDF document text and structure
+   */
+  async readPdf(filePath: string, options?: { maxPages?: number }): Promise<string> {
+    const buffer = await fs.readFile(filePath);
+    const parser = new PDFParse({ data: buffer });
+    try {
+      const textResult = await parser.getText();
+      const infoResult = await parser.getInfo().catch(() => null);
+
+      const meta: string[] = [];
+      if (textResult.total) meta.push(`Pages: ${textResult.total}`);
+      if (infoResult?.info?.Title) meta.push(`Title: ${infoResult.info.Title}`);
+      if (infoResult?.info?.Author) meta.push(`Author: ${infoResult.info.Author}`);
+
+      const header = meta.length > 0 ? `[PDF METADATA: ${meta.join(' | ')}]\n\n` : '';
+
+      if (options?.maxPages && options.maxPages > 0 && textResult.pages && textResult.pages.length > options.maxPages) {
+        const slicedPages = textResult.pages.slice(0, options.maxPages);
+        const pageTexts = slicedPages.map((p: any) => `--- Page ${p.num} ---\n${p.text}`).join('\n\n');
+        return `${header}${pageTexts}\n\n_[TRUNCATED: Showing first ${options.maxPages} of ${textResult.total} pages]_`;
+      }
+
+      return `${header}${textResult.text.trim()}`;
+    } finally {
+      await parser.destroy().catch(() => {});
+    }
   }
 }

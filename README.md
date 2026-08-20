@@ -22,12 +22,12 @@ Open PAIAgent is a high-speed, zero-bloat open-source personal AI agent built fo
     *   **🛒 E-commerce & Local Search**: Specialized URL structures, price sorting, and parsing rules for **Amazon**, **Wildberries**, **Ozon**, **Temu**, and **List.am**.
     *   **💻 Software Engineering**: Refactoring, debugging, and strict code style instructions.
     *   **🎨 Content Writing & Design**: Copywriting, UI/UX guidelines, and image generation prompt optimization.
-*   **👁️ AI Vision**: Attach images in the chat — the AI automatically resizes and converts them to analyze the visuals.
+*   **👁️ AI Vision & Document Analysis**: Attach images or upload documents directly in the chat. Features auto-optimization for images via `sharp` and native parsing for documents (**PDF**, **Word**, **Excel**, **Text/CSV/JSON**).
 *   **🔧 Powerful Tool Execution (Function Calling)**:
-    *   **File System Manager**: The AI can create, read, update, and delete text files within a dedicated local `workspace/` folder.
+    *   **📄 Full File & Document Lifecycle (Read & Write)**: Full read, create, update, and deletion support for multiple document types within the dedicated local `workspace/` folder:
+        *   **Read & Analyze**: Text/Markdown/Code/JSON/CSV, **PDF documents** (`.pdf`), **Word documents** (`.docx`, `.doc`), and **Excel spreadsheets** (`.xlsx`, `.xls` with multi-sheet inspection).
+        *   **Generate & Create**: Generate structured **Excel spreadsheets** (`.xlsx`) with custom columns, row styling, and formulas; build styled **Word documents** (`.docx`) with headings and tables; render custom HTML/CSS into professional A4 **PDF documents**; and create/update **text/code files**.
     *   **Web Scraper**: Downloads pages, strips out bloated HTML, and cleans the text for real-time AI analysis. Supports both fast static scraping and dynamic rendering with automatic fallback for SPAs (like React, Vue, e-commerce sites).
-    *   **PDF Generator**: The AI can write custom HTML/CSS templates and render them into professional A4 PDF documents saved directly to the workspace.
-    *   **Office Document Generator**: The AI can generate structured Excel spreadsheets (`.xlsx`) with custom columns, row styling, and formulas, as well as Word documents (`.docx`) with headings, styled paragraphs, text alignment, and tables.
     *   **Image Generation**: Generates images using **Together AI** or **X.AI (Grok)** APIs directly in the chat, with smart fallback logic (if one provider is not configured, it automatically uses the other).
 *   **💾 Semantic Memory (SQLite + Vectors)**: Saves chat sessions and history using SQLite, with support for semantic vector search via the lightweight `sqlite-vec` extension.
 *   **📋 Task Management & Scheduler**: Schedule automated background tasks or trigger them manually. Features an automatic background task runner (scans every 60s), real-time status tracking in the UI, and instant Telegram execution alerts.
@@ -50,7 +50,7 @@ Open PAIAgent is built with a clear focus on lightweight, efficient, and transpa
 ---
 
 ## 💡 What is this project for?
-This project is designed for anyone who wants a personal AI assistant that can manage local files, browse the web, generate images, and communicate seamlessly through a slick web interface or remotely on-the-go via a Telegram bot.
+This project is designed for anyone who wants a personal AI assistant that can seamlessly process documents (read & create PDF, Word, Excel, and text files), browse the web, generate images, and communicate smoothly through a slick web interface or remotely on-the-go via a Telegram bot.
 
 ### 🔒 100% Self-Hosted & Private
 OpenPAIAgent runs entirely on your local machine or private server. All chat history, settings, and workspace documents are stored in a local SQLite database. Your private data never leaves your computer, and you retain absolute control over which external APIs (like OpenRouter or Together AI) are called.
@@ -65,8 +65,8 @@ Built with clean TypeScript and vanilla web technologies under the MIT license. 
 *   **Backend**: Node.js, Fastify (faster and lighter than Express), TypeScript.
 *   **Frontend**: EJS, Vanilla CSS (cyberpunk theme), Vanilla JS.
 *   **Database**: `better-sqlite3` & `sqlite-vec` extension.
-*   **Media Processing**: `sharp` (optimizes images for AI inputs).
-*   **HTTP, Scraping & PDF**: `axios` + `cheerio` + `puppeteer` (headless Chrome).
+*   **Media & Document Processing**: `sharp` (images), `pdf-parse` (PDF reading), `mammoth` (Word reading), `exceljs` (Excel reading & generation), `docx` (Word generation).
+*   **HTTP, Scraping & PDF Rendering**: `axios` + `cheerio` + `puppeteer` (headless Chrome for dynamic scraping and PDF generation).
 *   **Telegram integration**: `telegraf`.
 
 ---

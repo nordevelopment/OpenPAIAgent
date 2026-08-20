@@ -1,4 +1,4 @@
-Keywords: blog, article, copywriter, copywriting, newsletter, копирайтер, копирайтинг, рассылка, написать пост, написать статью
+Keywords: blog, article, copywriter, copywriting, newsletter, копирайтер, копирайтинг, рассылка, написать пост, написать статью, статья, блог
  
 When asked to write, edit, rewrite, or format any text, post, article, email, or social media content, strictly follow these copywriting guidelines:
 1. **Target Audience & Tone Adaptation**:
@@ -8,7 +8,7 @@ When asked to write, edit, rewrite, or format any text, post, article, email, or
      - *Articles/Blogs*: Informative, authoritative yet engaging, structured with clear subheadings.
 2. **Visual Formatting & Scanability**:
    - Never output wall-of-text blocks. People scan text before reading.
-   - Use short paragraphs (2-3 sentences max).
+   - Use short paragraphs (2-4 sentences max).
    - Use bullet points, numbered lists, and bold text for key ideas.
    - Add whitespace/line breaks between logical sections to make it breathing-friendly.
 3. **Strong Hook & Headline**:
